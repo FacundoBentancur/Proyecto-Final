@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="es">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="">
+  <title>Login</title>
+  <link rel="icon" type="image/x-icon" href="img\icono_mi_pagina.png">
+  <link href="css\bootstrap.min.css" rel="stylesheet">
+  <link href="css\styles.css" rel="stylesheet">
+</head>
+
+<body class="bg-light">
+
+  <div class="container d-flex justify-content-center align-items-center"> <!-- Se centra vertical y horizontalmente en la pantalla -->
+
+  <main class="col-md-6">  
+    <div class="row mt-4"> 
+      <div class="col text-center">  <!-- Agregué text-center para centrar títulos y labels -->
+        <h1 class="mb-3"> <img src="img\logo_mi_tienda.png" alt="Logo de mi tienda" class="img-fluid" style="max-height:200px;"> </h1>
+        <hr class="my-4">
+        <div class="row g-3 justify-content-center"> <!-- Agregué justify-content-center para centrar los inputs -->
+
+          <div class="col-sm-8">  <!-- De col-sm-6 lo pasé a col-sm-8 (para ocupar todo el row, no solo la mitad) -->
+            <label for="nombre" class="form-label">Usuario</label>
+            <input type="text" class="form-control" id="usuario">
+          </div>
+
+        </div>
+
+        <div class="row g-4 justify-content-center"> <!-- Agregué justify-content-center para centrar los inputs -->
+
+          <div class="col-sm-8">  <!-- De col-sm-6 lo pasé a col-sm-8 (para ocupar todo el row, no solo la mitad) -->
+            <label for="password1" class="form-label">Contraseña</label>
+            <input type="password" class="form-control" id="password">
+          </div>
+
+          <div class="form-check col-sm-8">  <!-- Agregué col-sm-8 (para ocupar todo el row, no solo la mitad) -->
+            <input type="checkbox" class="form-check-input" id="terminos">
+            <label class="form-check-label" for="terminos">Acepto los términos y condiciones del servicio.</label>
+          </div>
+
+          <div class="col-sm-8">
+            <button class="btn btn-primary" type="button" id="ingBtn">Ingresar</button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+  </main>
+
+    <footer class="my-5 pt-5 text-muted text-center text-small">
+      <p class="mb-1">Este sitio forma parte de <a href="https://jovenesaprogramar.edu.uy/" target="_blank">Jovenes a
+          Programar</a></p>
+      <p class="mb-1">Es un sitio generado con fines estrictamente educativos. No realiza registros ni guarda datos de
+        ningún tipo.</p>
+    </footer>
+
+  <div class="alert alert-success alert-dismissible fade" role="alert" id="alert-success">
+    <p>Datos guardados correctamente</p>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+
+  <div class="alert alert-danger alert-dismissible fade" role="alert" id="alert-danger">
+    <p>Los datos ingresados no cumplen con los requisitos solicitados</p>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+
+  <script src="js\bootstrap.bundle.min.js"></script>
+  <script src="js\login.js"></script>
+</body>
+
+</html>
