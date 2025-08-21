@@ -1,9 +1,5 @@
 body {
   padding-top: 5%;
-<<<<<<< HEAD:css/styles.css
-=======
-  margin: 0;
->>>>>>> a751a0da721ec4b648a286080f46d092d8239443:workspace-inicial/css/styles.css
   height: 100vh;
   background: linear-gradient(135deg, #a1c4fd, #ffbaf1, #a1c4fd, #ffbaf1); /* 135deg, el degradado arranca en la esquina superior derecha y termina en la esquina inferior izquierda */
   background-size: 600% 600%;
@@ -196,11 +192,7 @@ footer p {
 }
 
 main {
-<<<<<<< HEAD:css/styles.css
   min-height: calc(100vh - 375px);
-=======
-  min-height: calc(100vh - 210px);
->>>>>>> a751a0da721ec4b648a286080f46d092d8239443:workspace-inicial/css/styles.css
 }
 
 a.custom-card,
@@ -213,18 +205,11 @@ a.custom-card:hover {
   color: orange;
 }
 
-<<<<<<< HEAD:css/styles.css
 #contenedorLogin {
   background: #ffffff;
   border-radius: 15px;
   padding: 30px;
-=======
-.container {
-  background: #ffffff;
-  border-radius: 15px;
-  padding: 30px;
   padding-bottom: 60px;
->>>>>>> a751a0da721ec4b648a286080f46d092d8239443:workspace-inicial/css/styles.css
   box-shadow: 0 4px 15px rgba(0,0,0,0.1);
   max-width: 960px;
   width: 80%;
