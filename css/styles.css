@@ -1,6 +1,5 @@
 body {
   padding-top: 5%;
-  margin: 0;
   height: 100vh;
   background: linear-gradient(135deg, #a1c4fd, #ffbaf1, #a1c4fd, #ffbaf1); /* 135deg, el degradado arranca en la esquina superior derecha y termina en la esquina inferior izquierda */
   background-size: 600% 600%;
@@ -193,7 +192,7 @@ footer p {
 }
 
 main {
-  min-height: calc(100vh - 210px);
+  min-height: calc(100vh - 375px);
 }
 
 a.custom-card,
@@ -206,7 +205,7 @@ a.custom-card:hover {
   color: orange;
 }
 
-.container {
+#contenedorLogin {
   background: #ffffff;
   border-radius: 15px;
   padding: 30px;
