@@ -1,0 +1,34 @@
+const Lista_autos = "https://japceibal.github.io/emercado-api/cats_products/101.json"
+
+let showSpinner = function(){
+  document.getElementById("spinner-wrapper").style.display = "block";
+}
+
+let hideSpinner = function(){
+  document.getElementById("spinner-wrapper").style.display = "none";
+}
+
+let getJSONData = function(Lista_autos){
+    let result = {};
+    showSpinner();
+    return fetch(Lista_autos)
+    .then(response => {
+      if (response.ok) {
+        return response.json();
+      }else{
+        throw Error(response.statusText);
+      }
+    })
+    .then(function(response) {
+          result.status = 'ok';
+          result.data = response;
+          hideSpinner();
+          return result;
+    })
+    .catch(function(error) {
+        result.status = 'error';
+        result.data = error;
+        hideSpinner();
+        return result;
+    });
+}
