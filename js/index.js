@@ -12,3 +12,16 @@ document.addEventListener("DOMContentLoaded", function(){
         window.location = "products.html"
     });
 });
+
+// LocalStorage - Inicio de Sesión
+
+ document.addEventListener("DOMContentLoaded", function () {
+    // Verifica si el usuario está logueado
+    if (!sessionStorage.getItem("loggedIn")) {
+        // Muestra una alerta indicando que debe loguearse
+        alert("Por favor, inicia sesión para acceder a esta página");
+
+        // Redirige a login.html
+        window.location.href = "login.html";
+    }
+});

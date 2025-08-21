@@ -43,3 +43,29 @@ document.getElementById("ingBtn").addEventListener("click", function() {
     window.location.href = "products.html";
   }, 1500);
 });
+
+// LocalStorage - Inicio de Sesión
+
+function login() {
+    // Se obtienen los valores de los campos de entrada a través de su ID.
+    const username = document.getElementById("usuario").value;
+    const password = document.getElementById("password").value;
+
+    // Se verifica si ambos campos están completos
+    if (username && password) {
+        // Se guarda el estado de inicio de sesión en sessionStorage
+        sessionStorage.setItem("loggedIn", "si");
+
+        // Se guarda el nombre de usuario y contraseña en localStorage
+        localStorage.setItem("usuario", username);
+        
+        // Se mantiene como comentario para ser utilizado en el futuro cercano/próximo.
+        // localStorage.setItem("password", password);
+
+        // Se redirige al usuario a index.html
+        window.location.href = "index.html";
+    } else {
+        // En el caso que la condición anterior no se cumpla (campos no están completos), se muestra una alerta
+        alert("Por favor, complete ambos campos.");
+    }
+}
