@@ -1,34 +1,34 @@
-const Lista_autos = "https://japceibal.github.io/emercado-api/cats_products/101.json"
+async function cargarProductos() {
+  try {
+    // Pedir datos de la API
+    const response = await fetch("https://japceibal.github.io/emercado-api/cats_products/101.json");
+    const data = await response.json();
 
-let showSpinner = function(){
-  document.getElementById("spinner-wrapper").style.display = "block";
-}
+    // Mostrar categoría en pantalla
+    document.getElementById("categoria").textContent = `CATÁLOGO DE PRODUCTOS - ${data.catName}`;
 
-let hideSpinner = function(){
-  document.getElementById("spinner-wrapper").style.display = "none";
-}
-
-let getJSONData = function(Lista_autos){
-    let result = {};
-    showSpinner();
-    return fetch(Lista_autos)
-    .then(response => {
-      if (response.ok) {
-        return response.json();
-      }else{
-        throw Error(response.statusText);
-      }
-    })
-    .then(function(response) {
-          result.status = 'ok';
-          result.data = response;
-          hideSpinner();
-          return result;
-    })
-    .catch(function(error) {
-        result.status = 'error';
-        result.data = error;
-        hideSpinner();
-        return result;
+    // Renderizar productos
+    const contenedor = document.getElementById("productos");
+    data.products.forEach(prod => {
+      const card = document.createElement("div");
+      card.classList.add("card");
+      card.innerHTML = `
+        <div class="card-img">
+          <img src="${prod.image}" alt="${prod.name}">
+        </div>
+        <div class="card-body">
+          <h2>${prod.name}</h2>
+          <p class="precio">$${prod.cost} ${prod.currency}</p>
+          <p>${prod.description}</p>
+          <p class="vendidos">Vendidos: ${prod.soldCount}</p>
+        </div>
+      `;
+      contenedor.appendChild(card);
     });
+
+  } catch (error) {
+    console.error("Error al pedir el JSON:", error);
+  }
 }
+
+cargarProductos();
