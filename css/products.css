@@ -1,0 +1,84 @@
+/* Reset básico */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Fondo general */
+body {
+  background-color: #f5f6fa;
+  color: #2f3640;
+  padding: 20px;
+}
+
+/* Encabezado de categoría */
+#categoria {
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 20px;
+  text-align: center;
+  color: #273c75;
+}
+
+/* Contenedor de productos */
+#productos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+/* Tarjeta de producto */
+.card {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+
+/* Imagen de producto */
+.card img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 15px;
+}
+
+/* Título */
+.card h2 {
+  font-size: 1.2rem;
+  margin-bottom: 10px;
+  color: #192a56;
+}
+
+/* Descripción */
+.card p {
+  font-size: 0.9rem;
+  margin-bottom: 8px;
+  line-height: 1.4;
+}
+
+/* Precio */
+.card .precio {
+  font-weight: bold;
+  color: #44bd32;
+  font-size: 1.1rem;
+}
+
+/* Vendidos */
+.card .vendidos {
+  font-size: 0.85rem;
+  color: #718093;
+}
