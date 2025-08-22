@@ -17,7 +17,7 @@ document.addEventListener("DOMContentLoaded", function(){
 
  document.addEventListener("DOMContentLoaded", function () {
     // Verifica si el usuario está logueado
-    if (!sessionStorage.getItem("loggedIn")) {
+    if (!localStorage.getItem("loggedIn") !== true) {
         // Muestra una alerta indicando que debe loguearse
         alert("Por favor, inicia sesión para acceder a esta página");
 

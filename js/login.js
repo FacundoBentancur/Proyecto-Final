@@ -38,9 +38,12 @@ document.getElementById("ingBtn").addEventListener("click", function() {
   // Si pasa todas las validaciones
   showAlertSuccess();
 
+
+  //  CAMBIÉ INDEX.HTML POR LOGIN.HTML
+
   // Redirigir después de 1.5 segundos, para que se vea el mensaje de éxito
   setTimeout(() => {
-    window.location.href = "products.html";
+    window.location.href = "index.html";
   }, 1500);
 });
 
@@ -54,7 +57,7 @@ function login() {
     // Se verifica si ambos campos están completos
     if (username && password) {
         // Se guarda el estado de inicio de sesión en sessionStorage
-        sessionStorage.setItem("loggedIn", "si");
+        localStorage.setItem("loggedIn", "true");
 
         // Se guarda el nombre de usuario y contraseña en localStorage
         localStorage.setItem("usuario", username);
