@@ -218,10 +218,26 @@ a.custom-card:hover {
   z-index: 1;
 }
 
-/* Resolución */
+/* Resolución de tableta en vertical */
 @media (min-width: 768px) and (max-width: 1024px) {
   body{
     margin-top: 10%;
   }
+
+}
+
+/* Resolución de móvil*/
+@media (min-width: 320px) and (max-width: 568px) {
+  body{
+    margin-top: 5%;
+    margin-bottom: 10%;
+  }
+  #contenedorLogin {
+    width: 90%;
+    padding: 20px;
+    padding-bottom: 50px;
+  }
+  footer p { font-size: 0.85rem; }
+  .mb-3 { font-size: 0.5rem; }
 
 }
