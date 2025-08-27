@@ -217,3 +217,11 @@ a.custom-card:hover {
   position: relative; /* asegura que quede por encima del fondo */
   z-index: 1;
 }
+
+/* Resolución */
+@media (min-width: 768px) and (max-width: 1024px) {
+  body{
+    margin-top: 10%;
+  }
+
+}
