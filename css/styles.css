@@ -219,6 +219,7 @@ a.custom-card:hover {
 
   /* limitar altura */
   max-height: 80vh;
+  min-height: 600px;
 }
 
 /* Evitar que el main interno estire el contenedor */
