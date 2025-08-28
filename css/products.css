@@ -104,3 +104,79 @@ body {
   text-align: right;
   margin-top: auto;
 }
+
+/* Diseño para tablet */
+@media (min-width: 320px) and (max-width: 768px){
+  #productos {
+    width: 90% 
+  }
+  .card {
+    flex-direction: row;
+    gap: 15px;
+  }
+  .card-img img {
+    width: 100px;
+    height: 100px;
+  } 
+  .card-body h2 {
+    font-size: 1rem;
+  }
+}
+
+/* Diseño para celular */
+
+@media (min-width: 320px) and (max-width: 568px){
+  #productos {
+    width: 100%;
+    padding: 15px;
+    box-sizing: border-box;
+    overflow-x: hidden;
+  }
+
+  .card {
+    display: flex;
+    flex-direction: column !important; /* Imagen arriba, texto abajo */
+    align-items: stretch;
+    width: 100%;
+    box-sizing: border-box;
+    margin-bottom: 20px; /* Espacio entre tarjetas */
+  }
+
+  .card-img {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin-bottom: 10px;
+  }
+
+  .card-img img {
+    width: 100%;
+    max-width: 250px;
+    height: auto;
+    display: block;
+  }
+
+  .card-body {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    text-align: center;;
+  }
+
+  .card-body h2 {
+    font-size: 1rem;
+    text-align: center;
+    margin: 0;
+    word-wrap: break-word;
+  }
+
+  .card-body .vendidos {
+    text-align: left;
+    font-size: 0.875rem;
+    white-space: normal;
+    text-align: center;;
+  }
+}
