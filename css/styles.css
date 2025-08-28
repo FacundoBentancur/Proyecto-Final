@@ -216,17 +216,25 @@ a.custom-card:hover {
   margin: auto;
   position: relative; /* asegura que quede por encima del fondo */
   z-index: 1;
+
+  /* limitar altura */
+  max-height: 80vh;
 }
 
-/* Resolución de tableta en vertical */
+/* Evitar que el main interno estire el contenedor */
+#contenedorLogin main {
+  min-height: auto;
+}
+
 @media (min-width: 768px) and (max-width: 1024px) {
   body{
     margin-top: 10%;
   }
-
+  #contenedorLogin {
+    max-height: 80vh;
+  }
 }
 
-/* Resolución de móvil*/
 @media (min-width: 320px) and (max-width: 568px) {
   body{
     margin-top: 5%;
@@ -236,8 +244,8 @@ a.custom-card:hover {
     width: 90%;
     padding: 20px;
     padding-bottom: 50px;
+    max-height: 90vh;
   }
   footer p { font-size: 0.85rem; }
   .mb-3 { font-size: 0.5rem; }
-
 }
