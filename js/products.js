@@ -58,14 +58,3 @@ async function cargarProductos() {
 }
 
 cargarProductos();
-
-// Logout
-const logoutBtn = document.getElementById("logoutBtn");
-if (logoutBtn) {
-  logoutBtn.addEventListener("click", function (e) {
-    e.preventDefault();
-    localStorage.removeItem("loggedIn");
-    localStorage.removeItem("usuario");
-    window.location.href = "login.html";
-  });
-}
