@@ -227,6 +227,7 @@ a.custom-card:hover {
   min-height: auto;
 }
 
+/* Diseño para tablet */
 @media (min-width: 768px) and (max-width: 1024px) {
   body{
     margin-top: 10%;
@@ -236,6 +237,7 @@ a.custom-card:hover {
   }
 }
 
+/* Diseño para celular */
 @media (min-width: 320px) and (max-width: 568px) {
   body{
     margin-top: 5%;
