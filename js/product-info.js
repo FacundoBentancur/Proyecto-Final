@@ -1,7 +1,7 @@
 // product-info.js
 document.addEventListener("DOMContentLoaded", async function () {
   try {
-    // Obtener el ID del producto guardado en localStorage
+    // Obtener el ID del producto guardado en localStorage (lo setea products.js al click)
     const productID = localStorage.getItem("productID");
     if (!productID) {
       document.querySelector("main .container").innerHTML = `
@@ -14,7 +14,6 @@ document.addEventListener("DOMContentLoaded", async function () {
     // URL de la API
     const url = `https://japceibal.github.io/emercado-api/products/${productID}.json`;
     const response = await fetch(url);
-
     if (!response.ok) {
       throw new Error("No se pudo obtener el producto con ID " + productID);
     }
@@ -22,7 +21,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     const product = await response.json();
 
     // Generar el carrusel de imágenes
-    const carouselItems = product.images
+    const carouselItems = (product.images || [])
       .map(
         (img, index) => `
         <div class="carousel-item ${index === 0 ? "active" : ""}">
@@ -37,7 +36,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     container.innerHTML = `
       <div class="product-info">
         <h2 class="product-title">${product.name}</h2>
-        <p class="product-category text-muted">${product.category}</p>
+        <p class="product-category text-muted">${product.category || ""}</p>
 
         <div id="productCarousel" class="carousel slide mb-4" data-bs-ride="carousel">
           <div class="carousel-inner">
@@ -52,9 +51,9 @@ document.addEventListener("DOMContentLoaded", async function () {
         </div>
 
         <div class="product-details">
-          <h4 class="text-success">$${product.cost} ${product.currency}</h4>
-          <p>${product.description}</p>
-          <p><strong>Vendidos:</strong> ${product.soldCount}</p>
+          <h4 class="text-success">$${product.cost} ${product.currency || ""}</h4>
+          <p>${product.description || ""}</p>
+          <p><strong>Vendidos:</strong> ${product.soldCount ?? 0}</p>
         </div>
       </div>
     `;
