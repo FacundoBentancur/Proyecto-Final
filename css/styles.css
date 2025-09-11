@@ -2,9 +2,9 @@
 body {
   padding-top: 5%;
   height: 100vh;
-  background: linear-gradient(135deg, #a1c4fd, #ffbaf1, #a1c4fd, #ffbaf1);
+  background: linear-gradient(135deg, #6ca4ff, #b4fff3);
   background-size: 600% 600%;
-  animation: gradientMove 30s ease-in-out infinite;
+  animation: gradientMove 15s ease-in-out infinite;
 }
 
 .jumbotron,
@@ -148,6 +148,7 @@ a.custom-card:hover { color: inherit; text-decoration: inherit; }
   max-height: 80vh;
   min-height: 600px;
 }
+/* Evitar que el main interno estire el contenedor */
 #contenedorLogin main { min-height: auto; }
 
 /* Visualización de información del producto (product-info.html) */
