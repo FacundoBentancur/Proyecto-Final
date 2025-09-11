@@ -1,9 +1,9 @@
 body {
   padding-top: 5%;
   height: 100vh;
-  background: linear-gradient(135deg, #a1c4fd, #ffbaf1, #a1c4fd, #ffbaf1); /* 135deg, el degradado arranca en la esquina superior derecha y termina en la esquina inferior izquierda */
+  background: linear-gradient(135deg, #afe3ff, #87c7ff); /* 135deg, el degradado arranca en la esquina superior derecha y termina en la esquina inferior izquierda */
   background-size: 600% 600%;
-  animation: gradientMove 30s ease-in-out infinite;
+  animation: gradientMove 10s ease-in-out infinite;
 }
 
 .jumbotron,

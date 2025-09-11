@@ -9,7 +9,8 @@
   <link href="https://fonts.googleapis.com/css?family=Raleway:300,300i,400,400i,700,700i,900,900i" rel="stylesheet">
   <link href="css/font-awesome.min.css" rel="stylesheet">
   <link href="css/bootstrap.min.css" rel="stylesheet">  
-  <link rel="stylesheet" href="css\products.css">
+  <link rel="stylesheet" href="css/products.css">
+  <link href="css/styles.css" rel="stylesheet">
   <script src="js/navbar.js"></script>
 </head>
 
@@ -36,18 +37,61 @@
     </div>
   </nav>
 
-  <h1 id="categoria"></h1>
-  <div class="contenedor" id="productos"></div>
+  <!-- Barra superior con botón de Filtros (alineado a la derecha) -->
+  <div class="container d-flex justify-content-end align-items-center my-3">
+    <button id="btnAbrirFiltros" class="btn btn-outline-primary">Filtros</button>
+  </div>
+
+  <!-- Panel lateral de filtros/orden -->
+  <aside id="panelFiltros" aria-hidden="true">
+    <div class="pf-header d-flex justify-content-between align-items-center">
+      <h2 class="m-0">Filtros</h2>
+      <button id="btnCerrarFiltros" class="btn btn-sm btn-outline-secondary" aria-label="Cerrar filtros">✕</button>
+    </div>
+
+    <div class="pf-body">
+      <!-- Controles existentes: precio min/max + botones -->
+      <div class="mb-3">
+        <label for="precioMin" class="form-label">Precio mínimo</label>
+        <input type="number" class="form-control" id="precioMin" placeholder="Min">
+      </div>
+      <div class="mb-3">
+        <label for="precioMax" class="form-label">Precio máximo</label>
+        <input type="number" class="form-control" id="precioMax" placeholder="Max">
+      </div>
+
+      <div class="d-flex gap-2 mb-3">
+        <button id="btnFiltrar" class="btn btn-primary flex-grow-1">Aplicar</button>
+        <button id="btnLimpiar" class="btn btn-outline-secondary">Limpiar</button>
+      </div>
+
+      <hr class="my-3">
+
+      <div class="mb-2 fw-semibold">Ordenar por</div>
+      <div class="btn-group w-100 mb-2" role="group" aria-label="Orden">
+        <button id="ordPrecioAsc" class="btn btn-outline-dark">Precio ↑</button>
+        <button id="ordPrecioDesc" class="btn btn-outline-dark">Precio ↓</button>
+        <button id="ordRelevDesc" class="btn btn-outline-dark">Relevancia ↓</button>
+      </div>
+      <small class="text-muted d-block">“Relevancia” = vendidos (descendente).</small>
+    </div>
+  </aside>
+
+  <!-- Fondo para cerrar en móvil -->
+  <div id="overlayFiltros" class="pf-overlay" hidden></div>
+
+  <!-- Envolvemos el contenido principal para poder desplazarlo cuando panel esté abierto -->
+  <div id="main">
+    <h1 id="categoria"></h1>
+    <div class="contenedor" id="productos"></div>
+  </div>
 
   <footer class="text-muted">
     <div class="container">
       <p class="float-end">
         <a href="#">Volver arriba</a>
       </p>
-      <p>
-        Este sitio forma parte de
-        <a href="https://jovenesaprogramar.edu.uy/" target="_blank">Jovenes a Programar</a>
-      </p>
+      <p>Este sitio forma parte de <a href="https://jovenesaprogramar.edu.uy/" target="_blank">Jovenes a Programar</a></p>
     </div>
   </footer>
 

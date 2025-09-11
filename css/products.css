@@ -180,3 +180,102 @@ body {
     text-align: center;;
   }
 }
+
+/* --- Controles --- */
+#controles .btn-group .btn.active {
+  background-color: #212529;
+  color: #fff;
+  border-color: #212529;
+}
+
+#controles .vr {
+  width: 1px;
+  height: 36px;
+  background: rgba(0,0,0,0.1);
+  align-self: center;
+}
+
+/* Ajuste de separación en móviles */
+@media (max-width: 576px) {
+  #controles .btn-group {
+    width: 100%;
+  }
+  #controles .btn-group .btn {
+    flex: 1 1 auto;
+  }
+}
+
+/* ===== Panel lateral de filtros ===== */
+#panelFiltros {
+  position: fixed;
+  top: 0;
+  right: 0;
+  height: 100dvh; /* soporta móviles con barras dinámicas */
+  width: 360px;   /* ancho en desktop/tablet */
+  max-width: 100%;
+  background: #fff;
+  box-shadow: -8px 0 24px rgba(0,0,0,0.15);
+  border-left: 1px solid rgba(0,0,0,0.08);
+  transform: translateX(100%);
+  transition: transform 0.28s ease, box-shadow 0.28s ease;
+  z-index: 1050; /* sobre el contenido */
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+}
+
+#panelFiltros.abierto {
+  transform: translateX(0);
+}
+
+#panelFiltros .pf-header {
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(0,0,0,0.08);
+}
+
+#panelFiltros .pf-body {
+  padding-top: 12px;
+  overflow: auto;
+  scrollbar-gutter: stable;
+}
+
+/* Fondo oscuro para móvil */
+.pf-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.25);
+  z-index: 1040;
+}
+
+/* Empuje del contenido cuando panel está abierto (solo en pantallas >= 576px) */
+#main {
+  transition: margin-right 0.28s ease, transform 0.28s ease;
+}
+
+@media (min-width: 1024px) {
+  #main.con-panel {
+    margin-right: 380px; /* algo más que 360 para respiración */
+    transform: translateX(-8px); /* leve empuje hacia la izquierda */
+  }
+}
+
+/* Comportamiento en pantallas chicas: el panel ocupa toda la pantalla */
+@media (max-width: 1023.98px) {
+  #panelFiltros {
+    width: 100%;
+    border-left: none;
+    box-shadow: none;
+  }
+}
+
+/* Botón activo de orden dentro del panel */
+#panelFiltros .btn-group .btn.active {
+  background-color: #212529;
+  color: #fff;
+  border-color: #212529;
+}
+
+/* Ajustes visuales menores */
+#btnAbrirFiltros {
+  min-width: 100px;
+}
