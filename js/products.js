@@ -8,8 +8,8 @@ let estado = {
 };
 
 // ---------- Utilidades básicas ----------
-const $ = (sel) => document.querySelector(sel); // Atajo para querySelector
-const isMobilePanel = () => window.matchMedia("(max-width: 575.98px)").matches; // ¿El panel debe comportarse "modal"?
+const $ = (sel) => document.querySelector(sel);
+const isMobilePanel = () => window.matchMedia("(max-width: 575.98px)").matches;
 
 function normalizarNumero(val) {
   if (val === "" || val === null || typeof val === "undefined") return null;

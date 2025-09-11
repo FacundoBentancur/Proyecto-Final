@@ -3,7 +3,6 @@ document.addEventListener("DOMContentLoaded", async function () {
   try {
     // Obtener el ID del producto guardado en localStorage (lo setea products.js al click)
     const productID = localStorage.getItem("productID");
-
     if (!productID) {
       document.querySelector("main .container").innerHTML = `
         <div class="alert alert-danger text-center">
@@ -27,7 +26,8 @@ document.addEventListener("DOMContentLoaded", async function () {
         (img, index) => `
         <div class="carousel-item ${index === 0 ? "active" : ""}">
           <img src="${img}" class="d-block w-100" alt="${product.name}">
-        </div>`
+        </div>
+      `
       )
       .join("");
 
