@@ -47,8 +47,14 @@ async function cargarProductos() {
           <p class="vendidos">Vendidos: ${prod.soldCount}</p>
         </div>
       `;
-      contenedor.appendChild(card);
-    });
+
+  card.addEventListener("click", () => {
+    localStorage.setItem("productID", prod.id); 
+    window.location = "product-info.html";  
+  });
+
+  contenedor.appendChild(card);
+});
 
   } catch (error) {
     console.error("Error al cargar los productos:", error);
