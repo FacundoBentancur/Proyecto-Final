@@ -1,23 +1,46 @@
-// === Estado global ===
-let productosOriginal = []; // productos tal cual vienen del fetch
+let productosOriginal = []; // Fuente "cruda" que llega del fetch; nunca se modifica
 let estado = {
-  min: null,
-  max: null,
-  orden: null, // 'PRECIO_ASC' | 'PRECIO_DESC' | 'RELEV_DESC' | null
+  min: null,        // Precio mínimo vigente del filtro
+  max: null,        // Precio máximo vigente del filtro
+  orden: null,      // 'PRECIO_ASC' | 'PRECIO_DESC' | 'RELEV_DESC' | null
+  busqueda: ""      // Texto actual del buscador
 };
 
-// Helpers
-const $ = (sel) => document.querySelector(sel);
-const isMobilePanel = () => window.matchMedia("(max-width: 575.98px)").matches;
+// ---------- Utilidades básicas ----------
+const $ = (sel) => document.querySelector(sel); // Atajo para querySelector
+const isMobilePanel = () => window.matchMedia("(max-width: 575.98px)").matches; // ¿El panel debe comportarse "modal"?
 
+/**
+ * Convierte un valor de input a número válido o null.
+ * - Si está vacío/indefinido, retorna null (sin filtrar).
+ * - Si no es un número válido, también retorna null.
+ */
 function normalizarNumero(val) {
   if (val === "" || val === null || typeof val === "undefined") return null;
   const n = Number(val);
   return Number.isFinite(n) ? n : null;
 }
 
-// === Filtro y Orden ===
-function aplicarFiltro(lista, { min, max }) {
+/**
+ * Crea una versión "debounced" de una función.
+ * - Agrupa sucesivas invocaciones y sólo ejecuta la última luego de "wait" ms.
+ * - Ideal para "input" de búsqueda en tiempo real.
+ */
+function debounce(fn, wait = 200) {
+  let t;
+  return (...args) => {
+    clearTimeout(t);
+    t = setTimeout(() => fn(...args), wait);
+  };
+}
+
+// ---------- Transformaciones: filtro y orden ----------
+
+/**
+ * Filtra por rango de precio [min, max].
+ * - Si ambos son null, devuelve la lista tal cual.
+ */
+function aplicarFiltroPrecio(lista, { min, max }) {
   if (min == null && max == null) return lista.slice();
   return lista.filter((p) => {
     const c = Number(p.cost);
@@ -28,6 +51,26 @@ function aplicarFiltro(lista, { min, max }) {
   });
 }
 
+/**
+ * Filtra por texto de búsqueda en "name" o "description".
+ * - No distingue mayúsculas/minúsculas.
+ * - Cadena vacía => sin filtro.
+ */
+function aplicarFiltroBusqueda(lista, termino) {
+  const q = (termino || "").toString().trim().toLowerCase();
+  if (!q) return lista.slice();
+  return lista.filter(p => {
+    const n = (p.name || "").toLowerCase();
+    const d = (p.description || "").toLowerCase();
+    return n.includes(q) || d.includes(q);
+  });
+}
+
+/**
+ * Ordena la lista según el criterio actual.
+ * - PRECIO_ASC / PRECIO_DESC / RELEV_DESC (soldCount)
+ * - Si no hay criterio, devuelve una copia sin ordenar.
+ */
 function aplicarOrden(lista, orden) {
   const arr = lista.slice();
   switch (orden) {
@@ -41,12 +84,17 @@ function aplicarOrden(lista, orden) {
       arr.sort((a, b) => b.soldCount - a.soldCount);
       break;
     default:
-      // sin orden
+      // Sin orden explícito
       break;
   }
   return arr;
 }
 
+/**
+ * Dibuja las tarjetas de productos en el contenedor principal.
+ * - Si no hay resultados, muestra un texto de estado.
+ * - Cada card guarda el productID y navega a product-info.html al click.
+ */
 function renderProductos(lista) {
   const contenedor = $("#productos");
   contenedor.innerHTML = "";
@@ -61,7 +109,7 @@ function renderProductos(lista) {
 
   lista.forEach((prod) => {
     const card = document.createElement("div");
-    card.classList.add("card");
+    card.classList.add("card", "cursor-active");
     card.innerHTML = `
       <div class="card-img">
         <img src="${prod.image}" alt="${prod.name}">
@@ -73,20 +121,41 @@ function renderProductos(lista) {
         <p class="vendidos">Vendidos: ${prod.soldCount}</p>
       </div>
     `;
+
+    card.addEventListener("click", () => {
+      if (prod && typeof prod.id !== "undefined") {
+        localStorage.setItem("productID", prod.id);
+      }
+      window.location = "product-info.html";
+    });
+
     contenedor.appendChild(card);
   });
 }
 
+/**
+ * Aplica todos los filtros/orden vigentes y vuelve a renderizar.
+ * - Punto único de verdad para actualizar la UI tras cambios en "estado".
+ */
 function aplicarYRender() {
-  const filtrados = aplicarFiltro(productosOriginal, estado);
-  const result = aplicarOrden(filtrados, estado.orden);
+  let lista = productosOriginal;
+  lista = aplicarFiltroPrecio(lista, estado);
+  lista = aplicarFiltroBusqueda(lista, estado.busqueda);
+  const result = aplicarOrden(lista, estado.orden);
   renderProductos(result);
 }
 
-// === Panel Lateral (abrir/cerrar, overlay y empuje del contenido) ===
+// ---------- Panel lateral de filtros (apertura/cierre y responsive) ----------
+
+/**
+ * Abre el panel de filtros.
+ * - En móvil muestra overlay.
+ * - En escritorio empuja el contenido principal.
+ * - Oculta el botón de abrir para evitar duplicados.
+ */
 function abrirPanel() {
   $("#panelFiltros").classList.add("abierto");
-  $("#btnAbrirFiltros").style.display = "none"; // ocultar el botón
+  $("#btnAbrirFiltros").style.display = "none";
 
   if (isMobilePanel()) {
     $("#overlayFiltros").hidden = false;
@@ -95,20 +164,32 @@ function abrirPanel() {
   }
 }
 
+/**
+ * Cierra el panel de filtros y restaura el layout.
+ */
 function cerrarPanel() {
   $("#panelFiltros").classList.remove("abierto");
   $("#overlayFiltros").hidden = true;
   $("#main").classList.remove("con-panel");
-
-  $("#btnAbrirFiltros").style.display = "inline-block"; // volver a mostrarlo
+  $("#btnAbrirFiltros").style.display = "inline-block";
 }
 
-
+/**
+ * Cierra el panel sólo si estamos en modo móvil.
+ * - Se usa después de aplicar una acción (filtrar/ordenar) para mejorar UX.
+ */
 function cerrarPanelSiMovil() {
   if (isMobilePanel()) cerrarPanel();
 }
 
-// === Carga de productos ===
+// ---------- Carga remota de productos ----------
+
+/**
+ * Descarga la categoría actual y guarda sus productos.
+ * - Prioriza ?cat= de la URL; si no existe, usa localStorage.catID.
+ * - Si no hay catID, muestra mensaje de error en la UI.
+ * - Tras cargar, inicializa UI y renderiza según el estado.
+ */
 async function cargarProductos() {
   try {
     const params = new URLSearchParams(location.search);
@@ -139,21 +220,32 @@ async function cargarProductos() {
   }
 }
 
-// === UI y eventos ===
+// ---------- Enlaces de UI y manejo de eventos ----------
+
+/**
+ * Conecta todos los elementos de la interfaz con la lógica:
+ * - Botones de abrir/cerrar panel y overlay
+ * - Filtro por precio (aplica e invierte min/max si están cruzados)
+ * - Botón "Limpiar" (restaura estado inicial)
+ * - Botones de orden (marca activa y re-renderiza)
+ * - Buscador en navbar (input con debounce, botón, Enter/Escape)
+ * - Ajustes del panel al cambiar el tamaño de la ventana
+ */
 function inicializarUI() {
   const inpMin = $("#precioMin");
   const inpMax = $("#precioMax");
 
-  // Botón abrir/cerrar + overlay
-  $("#btnAbrirFiltros").addEventListener("click", abrirPanel);
-  $("#btnCerrarFiltros").addEventListener("click", cerrarPanel);
-  $("#overlayFiltros").addEventListener("click", cerrarPanel);
+  // Abrir/cerrar panel + overlay
+  $("#btnAbrirFiltros")?.addEventListener("click", abrirPanel);
+  $("#btnCerrarFiltros")?.addEventListener("click", cerrarPanel);
+  $("#overlayFiltros")?.addEventListener("click", cerrarPanel);
 
-  // Aplicar filtro (y cerrar si es móvil)
-  $("#btnFiltrar").addEventListener("click", () => {
+  // Aplicar filtro por precio
+  $("#btnFiltrar")?.addEventListener("click", () => {
     const min = normalizarNumero(inpMin.value);
     const max = normalizarNumero(inpMax.value);
 
+    // Si el usuario ingresó min > max, se corrige automáticamente
     if (min != null && max != null && min > max) {
       estado.min = max;
       estado.max = min;
@@ -168,43 +260,79 @@ function inicializarUI() {
     cerrarPanelSiMovil();
   });
 
-  // Limpiar todo
-  $("#btnLimpiar").addEventListener("click", () => {
+  // Limpiar filtros, orden y búsqueda
+  $("#btnLimpiar")?.addEventListener("click", () => {
     estado.min = null;
     estado.max = null;
     estado.orden = null;
-    inpMin.value = "";
-    inpMax.value = "";
+    estado.busqueda = "";
+    if (inpMin) inpMin.value = "";
+    if (inpMax) inpMax.value = "";
+    const searchInput = $("#searchInput");
+    if (searchInput) searchInput.value = "";
     actualizarBotonesOrden();
     aplicarYRender();
     cerrarPanelSiMovil();
   });
 
-  // Orden
-  $("#ordPrecioAsc").addEventListener("click", () => {
+  // Ordenar por precio ascendente
+  $("#ordPrecioAsc")?.addEventListener("click", () => {
     estado.orden = "PRECIO_ASC";
     actualizarBotonesOrden();
     aplicarYRender();
     cerrarPanelSiMovil();
   });
 
-  $("#ordPrecioDesc").addEventListener("click", () => {
+  // Ordenar por precio descendente
+  $("#ordPrecioDesc")?.addEventListener("click", () => {
     estado.orden = "PRECIO_DESC";
     actualizarBotonesOrden();
     aplicarYRender();
     cerrarPanelSiMovil();
   });
 
-  $("#ordRelevDesc").addEventListener("click", () => {
+  // Ordenar por relevancia (vendidos desc)
+  $("#ordRelevDesc")?.addEventListener("click", () => {
     estado.orden = "RELEV_DESC";
     actualizarBotonesOrden();
     aplicarYRender();
     cerrarPanelSiMovil();
   });
 
-  // Cerrar panel si cambia el breakpoint (por si el usuario rota el dispositivo)
+  // ---- Buscador en la navbar ----
+  const searchInput = $("#searchInput");
+  const searchBtn = $("#searchBtn");
+
+  // Búsqueda en tiempo real (debounced)
+  searchInput?.addEventListener(
+    "input",
+    debounce(() => {
+      estado.busqueda = (searchInput.value || "").trim();
+      aplicarYRender();
+    }, 200)
+  );
+
+  // Click en botón "Buscar"
+  searchBtn?.addEventListener("click", () => {
+    estado.busqueda = (searchInput?.value || "").trim();
+    aplicarYRender();
+  });
+
+  // Enter busca / Escape limpia
+  searchInput?.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      estado.busqueda = (searchInput.value || "").trim();
+      aplicarYRender();
+    } else if (e.key === "Escape") {
+      searchInput.value = "";
+      estado.busqueda = "";
+      aplicarYRender();
+    }
+  });
+
+  // Mantiene el comportamiento correcto del panel si el viewport cambia
   window.addEventListener("resize", () => {
-    // Si el panel está abierto y pasamos a desktop, ocultamos overlay (se usa empuje).
     if ($("#panelFiltros").classList.contains("abierto")) {
       if (isMobilePanel()) {
         $("#main").classList.remove("con-panel");
@@ -217,7 +345,10 @@ function inicializarUI() {
   });
 }
 
-// Marca visual en botones de orden
+/**
+ * Actualiza la marca visual del botón de orden activo.
+ * - Quita "active" de todos y lo agrega al seleccionado.
+ */
 function actualizarBotonesOrden() {
   const map = {
     PRECIO_ASC: "#ordPrecioAsc",
@@ -225,10 +356,10 @@ function actualizarBotonesOrden() {
     RELEV_DESC: "#ordRelevDesc",
   };
   ["#ordPrecioAsc", "#ordPrecioDesc", "#ordRelevDesc"].forEach((sel) =>
-    $(sel).classList.remove("active")
+    $(sel)?.classList.remove("active")
   );
-  if (estado.orden && map[estado.orden]) $(map[estado.orden]).classList.add("active");
+  if (estado.orden && map[estado.orden]) $(map[estado.orden])?.classList.add("active");
 }
 
-// Init
+// ---------- Punto de entrada ----------
 cargarProductos();
