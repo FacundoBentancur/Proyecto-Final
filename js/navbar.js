@@ -9,8 +9,34 @@ document.addEventListener("DOMContentLoaded", () => {
     // Si existe, agrega el nombre a la derecha
     if (navbar) {
       const li = document.createElement("li");
-      li.innerHTML = `<span class="nav-link text-white">${usuario}</span>`;
+      li.classList.add("nav-item", "dropdown");
+
+      li.innerHTML = `
+        <a 
+          class="nav-link dropdown-toggle text-white" 
+          href="#" 
+          id="usuarioDropdown" 
+          role="button" 
+          data-bs-toggle="dropdown" 
+          aria-expanded="false">
+          ${usuario}
+        </a>
+        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="usuarioDropdown">
+          <li><a class="dropdown-item" href="/configuracion.html">Configuración</a></li>
+          <li><a class="dropdown-item" href="historial-de-compras.html">Historial de compras</a></li>
+          <li><hr class="dropdown-divider"></li>
+          <li><a class="dropdown-item" href="#" id="cerrarSesion">Cerrar sesión</a></li>
+        </ul>
+      `;
+
       navbar.appendChild(li);
+
+      // Acción de cerrar sesión
+      document.getElementById("cerrarSesion").addEventListener("click", () => {
+        localStorage.removeItem("usuario");
+        localStorage.setItem("loggedIn", "false");
+        window.location.href = "/login.html";
+      });
     }
   }
 });
