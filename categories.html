@@ -4,16 +4,22 @@
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <title>eMercado - Todo lo que busques está aquí</title>
+  <title>eMercado - Categorías</title>
 
-  <link href="https://fonts.googleapis.com/css?family=Raleway:300,300i,400,400i,700,700i,900,900i" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Raleway:300,400,700" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
   <link href="css/font-awesome.min.css" rel="stylesheet">
   <link href="css/bootstrap.min.css" rel="stylesheet">
   <link href="css/styles.css" rel="stylesheet">
+  <link href="css/products.css" rel="stylesheet">
   <script src="js/navbar.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/js/all.min.js"></script>
+  <script src="js/buscador.js"></script>
+
 </head>
 
 <body>
+  <!-- Navbar con buscador unificado -->
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark p-1">
     <div class="container">
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
@@ -21,17 +27,22 @@
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav w-100 justify-content-between">
+        <ul class="navbar-nav w-100 justify-content-between align-items-center gap-2">
           <li class="nav-item">
             <a class="nav-link" href="index.html">Inicio</a>
           </li>
           <li class="nav-item">
             <a class="nav-link active" href="categories.html">Categorías</a>
           </li>
-          <form class="d-flex" role="search">
-        <input class="form-control me-2" type="search" placeholder="Buscar" aria-label="Search"/>
-        <button class="btn btn-outline-success" type="submit">Buscar</button>
-      </form>
+
+          <form class="position-relative" role="search" onsubmit="event.preventDefault();">
+            <input id="searchInput" type="search" class="form-control pr-5" placeholder="Buscar productos..." autocomplete="off">
+            <button id="searchBtn" class="btn btn-link position-absolute" style="top: 0; right: 0; height: 100%;">
+              <i class="fas fa-search"></i>
+            </button>
+          <ul id="searchResults" class="dropdown-menu w-100 position-absolute"></ul>
+          </form>
+
           <li class="nav-item">
             <a class="nav-link" href="sell.html">Vender</a>
           </li>
@@ -39,70 +50,74 @@
       </div>
     </div>
   </nav>
-  <main class="pb-5">
-    <div class="text-center p-4">
-      <h2>Categorías</h2>
-      <p class="lead">Verás aquí todas las categorías del sitio.</p>
+
+  <!-- Botón para abrir filtros -->
+  <div class="container d-flex justify-content-end align-items-center my-3">
+    <button id="btnAbrirFiltros" class="btn btn-outline-primary">Filtros</button>
+  </div>
+
+  <!-- Panel lateral de filtros -->
+  <aside id="panelFiltros" aria-hidden="true">
+    <div class="pf-header d-flex justify-content-between align-items-center">
+      <h2 class="m-0">Filtros</h2>
+      <button id="btnCerrarFiltros" class="btn btn-sm btn-outline-secondary" aria-label="Cerrar filtros">✕</button>
     </div>
-    <div class="container">
-      <div class="row">
-        <div class="col text-end">
-          <div class="btn-group btn-group-toggle mb-4" data-bs-toggle="buttons">
-            <input type="radio" class="btn-check" name="options" id="sortAsc">
-            <label class="btn btn-light" for="sortAsc">A-Z</label>
-            <input type="radio" class="btn-check" name="options" id="sortDesc">
-            <label class="btn btn-light" for="sortDesc">Z-A</label>
-            <input type="radio" class="btn-check" name="options" id="sortByCount" checked>
-            <label class="btn btn-light" for="sortByCount"><i class="fas fa-sort-amount-down mr-1"></i></label>
-          </div>
-        </div>
+
+    <div class="pf-body">
+      <!-- Filtrar por cantidad -->
+      <div class="mb-3">
+        <label for="minCant" class="form-label">Cantidad mínima</label>
+        <input type="number" class="form-control" id="minCant" placeholder="Min">
       </div>
-      <div class="row">
-        <div class="col-lg-6 offset-lg-6 col-md-12 mb-1 container">
-          <div class="row container p-0 m-0">
-            <div class="col">
-              <p class="font-weight-normal text-end my-2">Cant.</p>
-            </div>
-            <div class="col">
-              <input class="form-control" type="number" placeholder="min." id="rangeFilterCountMin">
-            </div>
-            <div class="col">
-              <input class="form-control" type="number" placeholder="máx." id="rangeFilterCountMax">
-            </div>
-            <div class="col-3 p-0">
-              <div class="btn-group" role="group">
-                <button class="btn btn-light btn-block" id="rangeFilterCount">Filtrar</button>
-                <button class="btn btn-link btn-sm" id="clearRangeFilter">Limpiar</button>
-              </div>
-            </div>
-          </div>
-        </div>
+      <div class="mb-3">
+        <label for="maxCant" class="form-label">Cantidad máxima</label>
+        <input type="number" class="form-control" id="maxCant" placeholder="Max">
       </div>
-      <div class="row">
-        <div class="list-group" id="cat-list-container">
-        </div>
+
+      <div class="d-flex gap-2 mb-3">
+        <button id="btnFiltrar" class="btn btn-primary flex-grow-1">Aplicar</button>
+        <button id="btnLimpiar" class="btn btn-outline-secondary">Limpiar</button>
+      </div>
+
+      <hr class="my-3">
+
+      <!-- Orden -->
+      <div class="mb-2 fw-semibold">Ordenar por</div>
+      <div class="btn-group w-100 mb-2" role="group" aria-label="Orden">
+        <button id="ordAZ" class="btn btn-outline-dark">A-Z</button>
+        <button id="ordZA" class="btn btn-outline-dark">Z-A</button>
+        <button id="ordCant" class="btn btn-outline-dark">Cantidad ↓</button>
       </div>
     </div>
+  </aside>
+
+  <!-- Overlay para móvil -->
+  <div id="overlayFiltros" class="pf-overlay" hidden></div>
+
+  <!-- Contenido principal -->
+  <main id="main" class="container">
+    <h1 class="my-3">Categorías</h1>
+    <div class="contenedor" id="cat-list-container"></div>
   </main>
-  <footer class="text-muted">
+
+  <footer class="text-muted mt-4">
     <div class="container">
-      <p class="float-end">
-        <a href="#">Volver arriba</a>
-      </p>
+      <p class="float-end"><a href="#">Volver arriba</a></p>
       <p>Este sitio forma parte de <a href="https://jovenesaprogramar.edu.uy/" target="_blank">Jovenes a Programar</a></p>
     </div>
   </footer>
+
   <div id="spinner-wrapper">
     <div class="lds-ring">
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
     </div>
   </div>
+
   <script src="js/bootstrap.bundle.min.js"></script>
   <script src="js/init.js"></script>
   <script src="js/categories.js"></script>
 </body>
-
 </html>
