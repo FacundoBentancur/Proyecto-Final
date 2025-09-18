@@ -18,6 +18,13 @@ body {
 
 nav a { text-decoration: none; }
 
+/* Asegura que el botón (lupa buscador) no agrande el input */
+#searchBtn {
+  border: none;
+  background: transparent;
+  padding: 0 0.5rem;
+}
+
 .bd-placeholder-img {
   font-size: 1.125rem;
   text-anchor: middle;
