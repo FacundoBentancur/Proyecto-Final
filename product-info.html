@@ -35,30 +35,52 @@
       </div>
     </div>
   </nav>
+
   <main>
-    <div class="container"  id="productInfo">
-    </div>
+    <div class="container" id="productInfo"></div>
   </main>
-  <h2>Dejá tu comentario</h2>
 
-  <!-- Calificación -->
-  <div class="rating">
-    <input type="radio" id="star5" name="rating" value="5"><label for="star5">★</label>
-    <input type="radio" id="star4" name="rating" value="4"><label for="star4">★</label>
-    <input type="radio" id="star3" name="rating" value="3"><label for="star3">★</label>
-    <input type="radio" id="star2" name="rating" value="2"><label for="star2">★</label>
-    <input type="radio" id="star1" name="rating" value="1"><label for="star1">★</label>
+  <div class="container my-4">
+    <h2 class="mb-2" id="tituloComentario">Dejá tu comentario</h2>
+
+    <!-- Calificación -->
+    <div class="rating" id="ratingBox" aria-label="Calificación por estrellas">
+      <input type="radio" id="star5" name="rating" value="5"><label for="star5">★</label>
+      <input type="radio" id="star4" name="rating" value="4"><label for="star4">★</label>
+      <input type="radio" id="star3" name="rating" value="3"><label for="star3">★</label>
+      <input type="radio" id="star2" name="rating" value="2"><label for="star2">★</label>
+      <input type="radio" id="star1" name="rating" value="1"><label for="star1">★</label>
+    </div>
+
+    <!-- Comentario -->
+    <textarea id="comentario" placeholder="Escribe tu comentario aquí..."></textarea>
+
+    <!-- Botón -->
+    <div class="d-grid d-sm-block">
+      <button id="btnEnviar" onclick="enviarComentario()">Enviar</button>
+    </div>
+
+    <!-- Carrusel (solo en 320x568 o menor) -->
+    <div id="comentariosCarrusel" class="comentarios-carrusel mt-4" aria-live="polite">
+      <div class="carrusel-overlay left" id="prevComentario" role="button" tabindex="0" aria-label="Comentario anterior">
+        <span class="arrow">‹</span>
+      </div>
+
+      <div class="carrusel-viewport">
+        <div class="comentario-card" id="comentarioActual"><!-- Render por JS --></div>
+      </div>
+
+      <div class="carrusel-overlay right" id="nextComentario" role="button" tabindex="0" aria-label="Comentario siguiente">
+        <span class="arrow">›</span>
+      </div>
+    </div>
+
+    <!-- Indicadores del carrusel -->
+    <div id="indicadoresCarrusel" class="indicadores mt-2" aria-hidden="true"></div>
+
+    <!-- Lista (desktop/tablet y resoluciones mayores) -->
+    <div id="comentariosLista" class="mt-4"><!-- Render por JS --></div>
   </div>
-
-  <!-- Comentario -->
-  <textarea id="comentario" placeholder="Escribe tu comentario aquí..."></textarea>
-
-  <!-- Botón -->
-  <button onclick="enviarComentario()">Enviar</button>
-
-  <!-- Aquí se acumulan los comentarios -->
-  <div id="resultado"></div>
-
 
   <footer class="text-muted">
     <div class="container">
@@ -68,17 +90,15 @@
       <p>Este sitio forma parte de <a href="https://jovenesaprogramar.edu.uy/" target="_blank">Jovenes a Programar</a></p>
     </div>
   </footer>
+
   <div id="spinner-wrapper">
     <div class="lds-ring">
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
+      <div></div><div></div><div></div><div></div>
     </div>
   </div>
+
   <script src="js/bootstrap.bundle.min.js"></script>
   <script src="js/init.js"></script>
   <script src="js/product-info.js"></script>
 </body>
-
 </html>
