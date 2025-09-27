@@ -153,7 +153,7 @@ a.custom-card:hover { color: inherit; text-decoration: inherit; }
   position: relative;
   z-index: 1;
   max-height: 80vh;
-  min-height: 600px;
+  min-height: 700px;
 }
 /* Evitar que el main interno estire el contenedor */
 #contenedorLogin main { min-height: auto; }
