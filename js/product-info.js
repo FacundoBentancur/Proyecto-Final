@@ -208,6 +208,73 @@ document.addEventListener("DOMContentLoaded", async function () {
       renderLista();
     };
 
+// ----- Productos relacionados -----
+if (product.relatedProducts && product.relatedProducts.length) {
+  const relatedHTML = `
+    <div class="related-products mt-5">
+      <h3>Productos relacionados</h3>
+      <div class="row" id="relatedContainer"></div>
+    </div>
+  `;
+  container.insertAdjacentHTML("beforeend", relatedHTML);
+
+  const relatedContainer = document.getElementById("relatedContainer");
+
+  product.relatedProducts.forEach(rel => {
+    const col = document.createElement("div");
+    col.className = "col-md-4 mb-3";
+    col.innerHTML = `
+      <div class="card cursor-active shadow-sm h-100">
+        <img src="${rel.image}" class="card-img-top" alt="${rel.name}">
+        <div class="card-body">
+          <h5 class="card-title">${rel.name}</h5>
+        </div>
+      </div>
+    `;
+    col.addEventListener("click", () => {
+      localStorage.setItem("productID", rel.id);
+      window.location = "product-info.html";
+    });
+    relatedContainer.appendChild(col);
+  });
+}
+// ----- Más productos de la misma categoría -----
+try {
+  const urlCategoria = `https://japceibal.github.io/emercado-api/cats_products/${product.catID}.json`;
+  const responseCat = await fetch(urlCategoria);
+  const dataCat = await responseCat.json();
+
+  // Filtrar: excluir el actual y los que ya están en relatedProducts
+  const yaRelacionados = new Set(product.relatedProducts.map(r => r.id));
+  const extras = dataCat.products
+    .filter(p => p.id != product.id && !yaRelacionados.has(p.id))
+    .slice(0, 3); // por ejemplo, mostrar solo 3 extra
+
+  if (extras.length > 0) {
+    const relatedContainer = document.getElementById("relatedContainer");
+    extras.forEach(rel => {
+      const col = document.createElement("div");
+      col.className = "col-md-4 mb-3";
+      col.innerHTML = `
+        <div class="card cursor-active shadow-sm h-100">
+          <img src="${rel.image}" class="card-img-top" alt="${rel.name}">
+          <div class="card-body">
+            <h5 class="card-title">${rel.name}</h5>
+            <p class="card-text text-success">$${rel.cost} ${rel.currency}</p>
+          </div>
+        </div>
+      `;
+      col.addEventListener("click", () => {
+        localStorage.setItem("productID", rel.id);
+        window.location = "product-info.html";
+      });
+      relatedContainer.appendChild(col);
+    });
+  }
+} catch (err) {
+  console.warn("No se pudieron cargar productos extra de la categoría:", err);
+}
+    
   } catch (error) {
     console.error("Error al cargar el producto:", error);
     document.querySelector("main .container").innerHTML = `
@@ -216,3 +283,4 @@ document.addEventListener("DOMContentLoaded", async function () {
       </div>`;
   }
 });
+
