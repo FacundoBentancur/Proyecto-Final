@@ -39,6 +39,7 @@
   <main>
     <div class="container" id="productInfo"></div>
   </main>
+
   <div class="container my-4">
     <h2 class="mb-2" id="tituloComentario">Dejá tu comentario</h2>
 
@@ -59,7 +60,7 @@
       <button id="btnEnviar" onclick="enviarComentario()">Enviar</button>
     </div>
 
-    <!-- Carrusel (solo en 320x568 o menor) -->
+    <!-- Carrusel (solo en <=600px) -->
     <div id="comentariosCarrusel" class="comentarios-carrusel mt-4" aria-live="polite">
       <div class="carrusel-overlay left" id="prevComentario" role="button" tabindex="0" aria-label="Comentario anterior">
         <span class="arrow">‹</span>

@@ -22,7 +22,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     const responseComments = await fetch(urlComments);
     const apiComments = await responseComments.json();
 
-    // Generar el carrusel de imágenes
+    // Generar el carrusel de imágenes del producto
     const carouselItems = (product.images || [])
       .map((img, index) => `
         <div class="carousel-item ${index === 0 ? "active" : ""}">
@@ -57,7 +57,7 @@ document.addEventListener("DOMContentLoaded", async function () {
       </div>
     `;
 
-    // ----- Comentarios: API + usuario (localStorage) -----
+    // ===== Comentarios: API + usuario (localStorage) =====
     const STORAGE_KEY = `userComments:${productID}`;
 
     // Normalizar comentarios de API al mismo formato
@@ -81,7 +81,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     let comentariosAll = [...baseComments, ...userComments];
     let idx = 0;
 
-    // --- VISTA CARRUSEL ---
+    // --- VISTA CARRUSEL (comentarios) ---
     const comentarioCardEl = document.getElementById("comentarioActual");
     const indicadoresEl = document.getElementById("indicadoresCarrusel");
     const prevEl = document.getElementById("prevComentario");
@@ -135,10 +135,10 @@ document.addEventListener("DOMContentLoaded", async function () {
       nextEl.addEventListener("keydown", navKeyHandler(siguiente));
     }
 
-    // Primera render del carrusel
+    // Primera render del carrusel de comentarios
     renderComentarioCarrusel();
 
-    // --- VISTA LISTA ---
+    // --- VISTA LISTA (comentarios) ---
     const listaEl = document.getElementById("comentariosLista");
     function renderLista() {
       if (!listaEl) return;
@@ -165,7 +165,6 @@ document.addEventListener("DOMContentLoaded", async function () {
       // Indicadores solo cuando hay carrusel y hay comentarios:
       indicadoresEl.style.display = (useCarrusel && comentariosAll.length > 0) ? "block" : "none";
     }
-
     applyCommentView();
     window.addEventListener("resize", applyCommentView);
     window.addEventListener("orientationchange", applyCommentView);
@@ -208,73 +207,143 @@ document.addEventListener("DOMContentLoaded", async function () {
       renderLista();
     };
 
-// ----- Productos relacionados -----
-if (product.relatedProducts && product.relatedProducts.length) {
-  const relatedHTML = `
-    <div class="related-products mt-5">
-      <h3>Productos relacionados</h3>
-      <div class="row" id="relatedContainer"></div>
-    </div>
-  `;
-  container.insertAdjacentHTML("beforeend", relatedHTML);
+    // ====== Productos relacionados (Grid desktop + Carrusel mobile) ======
+    let relatedItems = Array.isArray(product.relatedProducts) ? [...product.relatedProducts] : [];
 
-  const relatedContainer = document.getElementById("relatedContainer");
+    const relatedHTML = `
+      <div class="related-products mt-5">
+        <h3>Productos relacionados</h3>
 
-  product.relatedProducts.forEach(rel => {
-    const col = document.createElement("div");
-    col.className = "col-md-4 mb-3";
-    col.innerHTML = `
-      <div class="card cursor-active shadow-sm h-100">
-        <img src="${rel.image}" class="card-img-top" alt="${rel.name}">
-        <div class="card-body">
-          <h5 class="card-title">${rel.name}</h5>
-        </div>
-      </div>
-    `;
-    col.addEventListener("click", () => {
-      localStorage.setItem("productID", rel.id);
-      window.location = "product-info.html";
-    });
-    relatedContainer.appendChild(col);
-  });
-}
-// ----- Más productos de la misma categoría -----
-try {
-  const urlCategoria = `https://japceibal.github.io/emercado-api/cats_products/${product.catID}.json`;
-  const responseCat = await fetch(urlCategoria);
-  const dataCat = await responseCat.json();
+        <!-- Grid centrado (desktop/tablet) -->
+        <div id="relatedGrid"></div>
 
-  // Filtrar: excluir el actual y los que ya están en relatedProducts
-  const yaRelacionados = new Set(product.relatedProducts.map(r => r.id));
-  const extras = dataCat.products
-    .filter(p => p.id != product.id && !yaRelacionados.has(p.id))
-    .slice(0, 3); // por ejemplo, mostrar solo 3 extra
+        <!-- Carrusel (≤600px) -->
+        <div id="relatedCarrusel" class="comentarios-carrusel mt-2" aria-live="polite">
+          <div class="carrusel-overlay left" id="prevRelated" role="button" tabindex="0" aria-label="Producto anterior">
+            <span class="arrow">‹</span>
+          </div>
 
-  if (extras.length > 0) {
-    const relatedContainer = document.getElementById("relatedContainer");
-    extras.forEach(rel => {
-      const col = document.createElement("div");
-      col.className = "col-md-4 mb-3";
-      col.innerHTML = `
-        <div class="card cursor-active shadow-sm h-100">
-          <img src="${rel.image}" class="card-img-top" alt="${rel.name}">
-          <div class="card-body">
-            <h5 class="card-title">${rel.name}</h5>
-            <p class="card-text text-success">$${rel.cost} ${rel.currency}</p>
+          <div class="carrusel-viewport">
+            <div class="card cursor-active shadow-sm h-100" id="relatedActual"><!-- render por JS --></div>
+          </div>
+
+          <div class="carrusel-overlay right" id="nextRelated" role="button" tabindex="0" aria-label="Producto siguiente">
+            <span class="arrow">›</span>
           </div>
         </div>
+
+        <div id="relatedIndicadores" class="indicadores mt-2" aria-hidden="true"></div>
+      </div>
+    `;
+    container.insertAdjacentHTML("beforeend", relatedHTML);
+
+    const relatedGrid = document.getElementById("relatedGrid");
+    const relatedCardEl = document.getElementById("relatedActual");
+    const relatedPrevEl = document.getElementById("prevRelated");
+    const relatedNextEl = document.getElementById("nextRelated");
+    const relatedIndicadoresEl = document.getElementById("relatedIndicadores");
+
+    function cardHTML(item, showPrice = false) {
+      const price = showPrice && item.cost && item.currency
+        ? `<p class="card-text text-success mb-0">$${item.cost} ${item.currency}</p>` : "";
+      return `
+        <img src="${item.image}" class="card-img-top" alt="${item.name}">
+        <div class="card-body">
+          <h5 class="card-title">${item.name}</h5>
+          ${price}
+        </div>
       `;
-      col.addEventListener("click", () => {
-        localStorage.setItem("productID", rel.id);
-        window.location = "product-info.html";
+    }
+
+    function goToProduct(id) {
+      localStorage.setItem("productID", id);
+      window.location = "product-info.html";
+    }
+
+    // Grid centrado (desktop/tablet)
+    function renderRelatedGrid() {
+      if (!relatedGrid) return;
+      relatedGrid.innerHTML = "";
+      relatedItems.forEach(item => {
+        const card = document.createElement("div");
+        card.className = "card cursor-active shadow-sm";
+        card.style.width = "220px";
+        card.innerHTML = cardHTML(item, true);
+        card.addEventListener("click", () => goToProduct(item.id));
+        relatedGrid.appendChild(card);
       });
-      relatedContainer.appendChild(col);
-    });
-  }
-} catch (err) {
-  console.warn("No se pudieron cargar productos extra de la categoría:", err);
-}
-    
+    }
+
+    // Carrusel mobile
+    let idxRel = 0;
+
+    function renderRelatedCarrusel() {
+      if (!relatedItems.length) {
+        relatedCardEl.innerHTML = `<div class="p-3 text-muted">No hay productos relacionados.</div>`;
+        relatedIndicadoresEl.innerHTML = "";
+        return;
+      }
+      const it = relatedItems[idxRel];
+      relatedCardEl.innerHTML = cardHTML(it, !!(it.cost && it.currency));
+      relatedCardEl.onclick = () => goToProduct(it.id);
+
+      relatedIndicadoresEl.innerHTML = relatedItems
+        .map((_, i) => `<span class="${i === idxRel ? 'dot active' : 'dot'}" aria-hidden="true"></span>`)
+        .join("");
+    }
+
+    function siguienteRel() {
+      if (!relatedItems.length) return;
+      idxRel = (idxRel + 1) % relatedItems.length;
+      renderRelatedCarrusel();
+    }
+    function anteriorRel() {
+      if (!relatedItems.length) return;
+      idxRel = (idxRel - 1 + relatedItems.length) % relatedItems.length;
+      renderRelatedCarrusel();
+    }
+
+    if (relatedPrevEl && relatedNextEl) {
+      relatedPrevEl.addEventListener("click", anteriorRel);
+      relatedNextEl.addEventListener("click", siguienteRel);
+
+      const navKeyHandlerRel = (fn) => (e) => {
+        if (e.key === "Enter" || e.key === " " || e.code === "Space") {
+          e.preventDefault(); fn();
+        }
+      };
+      relatedPrevEl.addEventListener("keydown", navKeyHandlerRel(anteriorRel));
+      relatedNextEl.addEventListener("keydown", navKeyHandlerRel(siguienteRel));
+    }
+
+    // Primer render
+    renderRelatedGrid();
+    renderRelatedCarrusel();
+
+    // ====== Más productos de la misma categoría ======
+    try {
+      const urlCategoria = `https://japceibal.github.io/emercado-api/cats_products/${product.catID}.json`;
+      const responseCat = await fetch(urlCategoria);
+      const dataCat = await responseCat.json();
+
+      // Filtrar: excluir el actual y los que ya están en relatedItems
+      const yaRelacionados = new Set(relatedItems.map(r => r.id));
+      const extras = dataCat.products
+        .filter(p => p.id != product.id && !yaRelacionados.has(p.id))
+        .slice(0, 3); // mostrar solo 3 extra
+
+      if (extras.length > 0) {
+        // Agregar a la fuente única
+        relatedItems = [...relatedItems, ...extras];
+
+        // Re-render de grid y carrusel para reflejar los extras
+        renderRelatedGrid();
+        renderRelatedCarrusel();
+      }
+    } catch (err) {
+      console.warn("No se pudieron cargar productos extra de la categoría:", err);
+    }
+
   } catch (error) {
     console.error("Error al cargar el producto:", error);
     document.querySelector("main .container").innerHTML = `
@@ -283,4 +352,3 @@ try {
       </div>`;
   }
 });
-
