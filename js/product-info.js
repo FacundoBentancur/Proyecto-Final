@@ -57,8 +57,7 @@ document.addEventListener("DOMContentLoaded", async function () {
       </div>
     `;
 
-    // ===== Comentarios: API + usuario (localStorage) =====
-    const STORAGE_KEY = `userComments:${productID}`;
+    // ===== Comentarios: API + usuario (solo en memoria, sin localStorage) =====
 
     // Normalizar comentarios de API al mismo formato
     const baseComments = apiComments.map(c => ({
@@ -68,14 +67,8 @@ document.addEventListener("DOMContentLoaded", async function () {
       description: c.description
     }));
 
-    // Cargar comentarios del usuario guardados
+    // Comentarios del usuario en memoria (no persistentes)
     let userComments = [];
-    try {
-      const guardados = localStorage.getItem(STORAGE_KEY);
-      userComments = guardados ? JSON.parse(guardados) : [];
-    } catch {
-      userComments = [];
-    }
 
     // Mezclar en un solo arreglo
     let comentariosAll = [...baseComments, ...userComments];
@@ -169,7 +162,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     window.addEventListener("resize", applyCommentView);
     window.addEventListener("orientationchange", applyCommentView);
 
-    // Exponer función para el botón "Enviar"
+    // Exponer función para el botón "Enviar" (sin persistir)
     window.enviarComentario = function () {
       const rating = document.querySelector('input[name="rating"]:checked');
       const comentario = document.getElementById("comentario").value.trim();
@@ -194,9 +187,8 @@ document.addEventListener("DOMContentLoaded", async function () {
         description: comentario
       };
 
-      // Persistir en localStorage de este producto
+      // Guardar solo en memoria durante la sesión actual
       userComments.push(nuevo);
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(userComments));
 
       // Actualizar arreglo total y mostrar el último
       comentariosAll.push(nuevo);
@@ -205,6 +197,11 @@ document.addEventListener("DOMContentLoaded", async function () {
       // Re-render de ambas vistas
       renderComentarioCarrusel();
       renderLista();
+
+      // (Opcional) limpiar inputs
+      document.getElementById("comentario").value = "";
+      const checked = document.querySelector('input[name="rating"]:checked');
+      if (checked) checked.checked = false;
     };
 
     // ====== Productos relacionados (Grid desktop + Carrusel mobile) ======
