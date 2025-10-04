@@ -160,9 +160,9 @@ button:hover { background: #004c99; transform: translateY(-1px); }
 .estrellas { color: #ffcc00; font-size: 1.5rem; margin-bottom: 6px; text-shadow: 0 0 4px rgba(255, 240, 37, 0.2); }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
 
-/* --- Carrusel --- */
+/* --- Carrusel genérico (comentarios y relacionados mobile) --- */
 .comentarios-carrusel {
-  position: relative; display: none; /* visible solo en 320x568 o menor (CSS + JS fallback) */
+  position: relative; display: none; /* visible solo en <=600px (CSS + JS fallback para comentarios) */
   align-items: stretch; gap: 0;
 }
 .carrusel-viewport {
@@ -192,10 +192,10 @@ button:hover { background: #004c99; transform: translateY(-1px); }
 }
 .indicadores .dot.active { background: #3b82f6; }
 
-/* --- Modo lista por defecto --- */
+/* --- Modo lista por defecto (comentarios) --- */
 #comentariosLista { display: block; }
 
-/* --- Activar carrusel en <= 600px de ancho, ocultar lista e indicadores visibles --- */
+/* --- Activar carrusel de comentarios en <= 600px de ancho, ocultar lista e indicadores visibles --- */
 @media (max-width: 600px) {
   #tituloComentario { text-align: center; }
   .rating { justify-content: center !important; margin-left: 0 !important; }
@@ -205,4 +205,44 @@ button:hover { background: #004c99; transform: translateY(-1px); }
   #comentariosLista { display: none; }     /* lista oculta */
 
   .indicadores { display: block; }         /* puntos visibles solo en carrusel */
+}
+
+/* ================== RELACIONADOS ================== */
+/* Título centrado */
+.related-products h3 { text-align: center; }
+
+/* Grid centrado (desktop/tablet) */
+#relatedGrid {
+  display: flex;
+  justify-content: center;     /* centra el conjunto de cards */
+  flex-wrap: wrap;
+  gap: 12px;
+  max-width: 980px;
+  margin: 0 auto;
+}
+
+/* Cards más compactas */
+.related-products .card {
+  max-width: 220px;
+  margin: 0 6px;
+}
+
+/* Imágenes más chicas dentro de la card */
+.related-products .card-img-top {
+  height: 140px;
+  object-fit: contain;
+  padding: 8px;
+  background: #fff;
+  border-bottom: 1px solid #eee;
+}
+
+/* Carrusel mobile oculto por defecto (se muestra en ≤600px) */
+#relatedCarrusel {
+  display: none;
+}
+
+/* En mobile: mostrar carrusel y ocultar grid */
+@media (max-width: 600px) {
+  #relatedGrid { display: none; }
+  #relatedCarrusel { display: flex; }
 }
