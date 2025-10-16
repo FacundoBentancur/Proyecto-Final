@@ -22,8 +22,9 @@ document.addEventListener("DOMContentLoaded", () => {
           ${usuario}
         </a>
         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="usuarioDropdown">
+          <li><a class="dropdown-item" href="/my-profile.html">Mi perfil</a></li>
           <li><a class="dropdown-item" href="/configuracion.html">Configuración</a></li>
-          <li><a class="dropdown-item" href="historial-de-compras.html">Historial de compras</a></li>
+          <li><a class="dropdown-item" href="/historial-de-compras.html">Historial de compras</a></li>
           <li><hr class="dropdown-divider"></li>
           <li><a class="dropdown-item" href="#" id="cerrarSesion">Cerrar sesión</a></li>
         </ul>
