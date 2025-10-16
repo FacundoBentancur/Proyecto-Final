@@ -246,3 +246,50 @@ button:hover { background: #004c99; transform: translateY(-1px); }
   #relatedGrid { display: none; }
   #relatedCarrusel { display: flex; }
 }
+/* Boton modo oscuro*/
+.dark-mode{
+  width: var(--dark-mode-width);
+  height: var(--dark-mode-height);
+  display: flex;
+  align-items: center;
+  border-radius: 999px;
+  background-color: #dfdfdf;
+}
+:root{
+  --dark-mode-width:60px;
+  --dark-mode-height:30px;
+}
+ .dark-mode .circle {
+background-color: white;
+width: 40%;
+height: 80%;
+border-radius: 999px;
+display: flex;
+justify-content: center;
+align-items: center;
+flex-direction: column;
+transform: translateX(10%);
+overflow: hidden;
+}
+.dark-mode .circle ion-icon{
+  width: 70%;
+  height: 70%;
+ position: absolute;
+}
+.dark-mode .circle .moon{
+  transform: translateY(-120%);
+}
+body.active .circle{
+  transform: translateX(160%);
+  background-color: #2A2A2C;
+}
+body.active .circle .moon{
+  transform: translateX(0);
+  color: white;
+}
+body.active .circle .sun{
+  transform: translateY(120%);
+}
+.dark-mode .circle .sun{
+    color: #ffd000;
+}
