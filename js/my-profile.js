@@ -69,8 +69,8 @@
       precargarPrimeraVez();
     }
 
-    const sessionAvatar = sessionStorage.getItem('avatarSession');
-    avatarPreview.src = sessionAvatar || 'img/user_placeholder.png';
+    const localAvatar = localStorage.getItem('avatarLocal');
+    avatarPreview.src = localAvatar || 'img/user_placeholder.png';
     if (avatarInput) avatarInput.value = '';
   }
 
@@ -138,12 +138,12 @@
     localStorage.setItem(USER_EMAIL_KEY, data.email);
     showAlert('Perfil guardado.');
 
-    const dropdownTrigger = document.getElementById('usuarioDropdown');
+    /* const dropdownTrigger = document.getElementById('usuarioDropdown');
     const nameSpan = dropdownTrigger?.querySelector('span');
-    if (nameSpan && (data.nombre || data.apellido)) {
-      nameSpan.textContent = `${data.nombre} ${data.apellido}`.trim();
+    if (nameSpan && (data.nombre || data.apellido)) {                             Al modificar Nombre y Usuario se 
+      nameSpan.textContent = `${data.nombre} ${data.apellido}`.trim();            modifica también el nombre de usuario en NavBar
       localStorage.setItem(USUARIO_KEY, nameSpan.textContent);
-    }
+    }*/
   }
 
   document.addEventListener('DOMContentLoaded', cargarPerfil);
@@ -161,19 +161,9 @@
     form.reset();
     precargarPrimeraVez();
     avatarPreview.src = 'img/user_placeholder.png';
-    sessionStorage.removeItem('avatarSession');
+    localStorage.removeItem('avatarLocal');
     window.dispatchEvent(new CustomEvent('profile:avatar-updated', { detail: { src: 'img/user_placeholder.png' } }));
     showAlert('Formulario limpio.', 'secondary', 1500);
-  });
-
-  $('#btnBorrarPerfil')?.addEventListener('click', () => {
-    localStorage.removeItem(PERFIL_KEY);
-    form.reset();
-    precargarPrimeraVez();
-    avatarPreview.src = 'img/user_placeholder.png';
-    sessionStorage.removeItem('avatarSession');
-    window.dispatchEvent(new CustomEvent('profile:avatar-updated', { detail: { src: 'img/user_placeholder.png' } }));
-    showAlert('Datos eliminados.', 'warning', 2200);
   });
 
   avatarInput?.addEventListener('change', async () => {
@@ -187,7 +177,7 @@
     try {
       const dataUrl = await readAsDataURL(file);
       avatarPreview.src = dataUrl;
-      sessionStorage.setItem('avatarSession', dataUrl);
+      localStorage.setItem('avatarLocal', dataUrl);
       window.dispatchEvent(new CustomEvent('profile:avatar-updated', { detail: { src: dataUrl } }));
     } catch {
       showAlert('No se pudo leer la imagen.', 'danger');
@@ -197,7 +187,7 @@
   btnQuitarFoto?.addEventListener('click', () => {
     const placeholder = 'img/user_placeholder.png';
     avatarPreview.src = placeholder;
-    sessionStorage.removeItem('avatarSession');
+    localStorage.removeItem('avatarLocal');
     window.dispatchEvent(new CustomEvent('profile:avatar-updated', { detail: { src: placeholder } }));
   });
 

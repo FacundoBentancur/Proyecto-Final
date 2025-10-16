@@ -17,8 +17,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // --- 🧠 Resolver avatar:
     function getAvatarSrc() {
-      const fromSession = sessionStorage.getItem("avatarSession");
-      if (fromSession) return fromSession;
+      const fromLocal = localStorage.getItem("avatarLocal");
+      if (fromLocal) return fromLocal;
 
       try {
         const perfil = JSON.parse(localStorage.getItem("perfil"));
@@ -68,9 +68,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // --- 🔒 Cerrar sesión y limpiar TODO
     document.getElementById("cerrarSesion")?.addEventListener("click", () => {
-      // Limpia completamente almacenamiento local y de sesión
+      // Limpia completamente almacenamiento local
       localStorage.clear();
-      sessionStorage.clear();
 
       // Redirige a la pantalla de login
       window.location.href = "login.html";
