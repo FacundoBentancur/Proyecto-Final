@@ -1,3 +1,12 @@
+document.addEventListener("DOMContentLoaded", function() {
+  // Chequeo de login
+  if (localStorage.getItem("loggedIn") !== "true") {
+    alert("Por favor, inicia sesión para acceder a esta página");
+    window.location.href = "login.html";
+    return; // detener ejecución
+  }
+});
+
 document.addEventListener("DOMContentLoaded", () => {
   const usuario = localStorage.getItem("usuario");
   const loggedIn = localStorage.getItem("loggedIn");
