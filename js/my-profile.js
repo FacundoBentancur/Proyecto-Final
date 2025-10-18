@@ -70,7 +70,7 @@
     }
 
     const localAvatar = localStorage.getItem('avatarLocal');
-    avatarPreview.src = localAvatar || 'img/user_placeholder.png';
+    avatarPreview.src = localAvatar || 'img/placeholderUSR.png';
     if (avatarInput) avatarInput.value = '';
   }
 
@@ -160,9 +160,9 @@
   $('#btnLimpiar')?.addEventListener('click', () => {
     form.reset();
     precargarPrimeraVez();
-    avatarPreview.src = 'img/user_placeholder.png';
+    avatarPreview.src = 'img/placeholderUSR.png';
     localStorage.removeItem('avatarLocal');
-    window.dispatchEvent(new CustomEvent('profile:avatar-updated', { detail: { src: 'img/user_placeholder.png' } }));
+    window.dispatchEvent(new CustomEvent('profile:avatar-updated', { detail: { src: 'img/placeholderUSR.png' } }));
     showAlert('Formulario limpio.', 'secondary', 1500);
   });
 
@@ -185,7 +185,7 @@
   });
 
   btnQuitarFoto?.addEventListener('click', () => {
-    const placeholder = 'img/user_placeholder.png';
+    const placeholder = 'img/placeholderUSR.png';
     avatarPreview.src = placeholder;
     localStorage.removeItem('avatarLocal');
     window.dispatchEvent(new CustomEvent('profile:avatar-updated', { detail: { src: placeholder } }));

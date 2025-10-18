@@ -24,7 +24,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const perfil = JSON.parse(localStorage.getItem("perfil"));
         if (perfil && perfil.avatarDataUrl) return perfil.avatarDataUrl;
       } catch {}
-      return "img/user_placeholder.png";
+      return "img/placeholderUSR.png";
     }
 
     const li = document.createElement("li");
