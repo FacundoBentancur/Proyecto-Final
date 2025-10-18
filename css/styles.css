@@ -246,3 +246,222 @@ button:hover { background: #004c99; transform: translateY(-1px); }
   #relatedGrid { display: none; }
   #relatedCarrusel { display: flex; }
 }
+/* Boton modo oscuro*/
+.dark-mode{
+  width: var(--dark-mode-width);
+  height: var(--dark-mode-height);
+  display: flex;
+  align-items: center;
+  border-radius: 999px;
+  background-color: #dfdfdf;
+  transition: background-color 0.5s;
+}
+:root{
+  --dark-mode-width:60px;
+  --dark-mode-height:30px;
+}
+ .dark-mode .circle {
+background-color: white;
+width: 37%;
+height: 80%;
+border-radius: 999px;
+display: flex;
+justify-content: center;
+align-items: center;
+flex-direction: column;
+transform: translateX(10%);
+overflow: hidden;
+transition: transform 0.5s ease;
+}
+.dark-mode .circle ion-icon{
+  width: 70%;
+  height: 70%;
+ position: absolute;
+ transition: transform 0.5s ease;
+}
+.dark-mode .circle .moon{
+  transform: translateY(-120%);
+}
+body.active .circle{
+  transform: translateX(160%);
+  background-color: #2A2A2C;
+}
+body.active .circle .moon{
+  transform: translateX(0);
+  color: white;
+}
+body.active .circle .sun{
+  transform: translateY(120%);
+}
+.dark-mode .circle .sun{
+    color: #ffd000;
+}
+body.active .dark-mode{
+  background-color: white
+}
+/* Ajustes del modo oscuroo*/
+body.active{
+ background: #575757;
+background: linear-gradient(175deg,rgb(54, 54, 54) 0%, rgb(0, 0, 0) 81%);
+}
+body.active .jumbotron.text-center{
+ background-image: url("../img/cover_back_black.png") !important;
+}
+body.active .album {
+  background: #000000 !important;
+  color: white !important;
+}
+body.active .btn.btn-light.btn-lg.btn-block {
+  background-color: #222 !important;
+  color: #bbbbbb !important;
+  border: 1px solid #313131 !important;
+}
+body.active .custom-card {
+  background-color: #111111; /* fondo oscuro */
+  color: #f0f0f0; /* texto claro */
+  border: 2px solid rgb(75, 75, 75);
+}
+body.active .card-text{
+  color: white;
+}
+body.active .m-3{
+  color: white;
+}
+body.active p.lead{
+  color: white;
+} 
+body.active .col-md-6mb-3 label{
+  color: white;
+}
+body.active h4.mb-3{
+  color: white;
+} 
+body.active a{
+  color: rgb(214, 100, 58);
+}
+body.active .card.cursor-active {
+  background: linear-gradient(to bottom, black 95%, rgb(64, 224, 117) 100%);
+}
+
+body.active .product-info {
+  background: linear-gradient(to bottom, black 95%, rgb(64, 224, 117) 100%);
+}
+
+body.active .product-info p{
+  color: white;
+}
+body.active .text-success{
+  color:white !important;
+}
+
+
+body.active .my-3{
+  color: white;
+}
+
+body.active h2{
+  color: white;
+}
+body.active label{
+  color: white;
+}
+body.active .btn.btn-primary.btn-lg{
+color: rgb(255, 255, 255);
+background-color: rgb(214, 100, 58);
+ border-radius: 100px;
+ border-color: #000000;
+  background: linear-gradient(
+    to right,
+    rgb(214, 100, 58) 0%,    
+    rgb(255, 200, 80) 50%,   
+    rgb(214, 100, 58) 100%    
+  );
+  color: white;
+  padding: 10px 20px;
+}
+body.active button.m-1.btn.btn-link{
+  color: rgb(214, 100, 58);
+}
+body.active .btn.btn-primary{
+  color: rgb(255, 255, 255);
+background-color: rgb(214, 100, 58);
+ border-radius: 100px;
+ border-color: #000000;
+  background: linear-gradient(
+    to right,
+    rgb(214, 100, 58) 0%,    
+    rgb(255, 200, 80) 50%,   
+    rgb(214, 100, 58) 100%    
+  );
+  color: white;
+  padding: 10px 20px;
+}
+body.active .card-img-top{
+  background-color: rgb(0, 0, 0);
+}
+body.active #btnEnviar{
+    color: rgb(255, 255, 255);
+background-color: rgb(214, 100, 58);
+ border-radius: 100px;
+ border-color: #000000;
+  background: linear-gradient(
+    to right,
+    rgb(214, 100, 58) 0%,    
+    rgb(255, 200, 80) 50%,   
+    rgb(214, 100, 58) 100%    
+  );
+  color: white;
+  padding: 10px 20px;
+}
+
+body.active h3{
+  color: white;
+} 
+
+body.active h5{
+  color: white;
+}
+body.active p.card-text{
+  color: white;
+}
+body.active .card-body p {
+  color: white;
+}
+body.active p{
+  color: black;
+}
+body.active .estrellas p{
+  color: rgb(0, 0, 0) !important;
+}
+body.active {
+  color: black !important;
+}
+body.active b{
+  color: black;
+}
+body.active #comentariosLista{
+  color: black !important; 
+}
+
+body.active h1#categoria.my-3{
+  color: rgb(141, 141, 141);
+}
+body.active .contenedor{
+background-color: #222121 !important;
+border-radius: 20px;
+}
+body.active .btn.btn-outline-primary{
+  color: rgb(214, 100, 58);
+  border-color: rgb(214, 100, 58);
+}
+body.active .form-control.pr-5{
+  background-color: rgb(41, 41, 41);
+  color:white;
+}
+body.active .dropdown-item.d-flex.align-items-center.gap-2{
+  background-color: #363636;
+  color: white;
+}
+body.active .dropdown-menu.w-100.position-absolute.show{
+  background-color: #363636;
+}
