@@ -1,6 +1,5 @@
 /* Fondo animado */
 body {
-  padding-top: 5%;
   height: 100vh;
   background: linear-gradient(135deg, #6ca4ff, #b4fff3);
   background-size: 600% 600%;
