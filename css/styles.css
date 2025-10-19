@@ -481,3 +481,8 @@ body.active .dropdown-menu.w-100.position-absolute.show{
 body.active .product-details.mb-4 p{
   color: white;
 }
+
+/* Padding superior solo para login.html */
+body.login-page {
+  padding-top: 5%;
+}
