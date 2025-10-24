@@ -36,7 +36,6 @@ document.addEventListener("DOMContentLoaded", async function () {
       <div class="product-info">
         <h2 class="product-title">${product.name}</h2>
         <p class="product-category text-muted">${product.category || ""}</p>
-
         <div id="productCarousel" class="carousel slide mb-4" data-bs-ride="carousel">
           <div class="carousel-inner">
             ${carouselItems}
@@ -54,7 +53,6 @@ document.addEventListener("DOMContentLoaded", async function () {
           <p>${product.description || ""}</p>
           <p><strong>Vendidos:</strong> ${product.soldCount ?? 0}</p>
         </div>
-      </div>
     `;
 
     // ===== Comentarios: API + usuario (solo en memoria, sin localStorage) =====
@@ -348,4 +346,15 @@ document.addEventListener("DOMContentLoaded", async function () {
         Ocurrió un error al cargar la información del producto.
       </div>`;
   }
+});
+
+
+
+ 
+const comprar = document.getElementById("button_buy");
+
+comprar.addEventListener("click", () => {
+  const id = localStorage.getItem("productID");
+  localStorage.setItem("productID", id);
+  window.location.href = "cart.html";
 });
