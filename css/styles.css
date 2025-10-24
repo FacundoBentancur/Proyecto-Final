@@ -147,6 +147,13 @@ button {
 }
 button:hover { background: #004c99; transform: translateY(-1px); }
 
+.button-container {
+display: flex;
+justify-content: center;
+align-items: center;
+margin-top: 5%;
+}
+
 /* -------- Comentarios -------- */
 #comentariosCarrusel, #comentariosLista { max-width: 800px; margin-left: auto; margin-right: auto; }
 
