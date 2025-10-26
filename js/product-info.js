@@ -205,6 +205,24 @@ document.addEventListener("DOMContentLoaded", async function () {
     // ====== Productos relacionados (Grid desktop + Carrusel mobile) ======
     let relatedItems = Array.isArray(product.relatedProducts) ? [...product.relatedProducts] : [];
 
+    const buyButtonHTML = `
+      <div class="button-container text-center my-4">
+        <button id="button_buy" type="button" class="btn btn-primary btn-lg">
+          Comprar
+        </button>
+      </div>
+    `;
+  container.insertAdjacentHTML("beforeend", buyButtonHTML);
+
+    const comprar = document.getElementById("button_buy");
+  if (comprar) {
+    comprar.addEventListener("click", () => {
+      const id = localStorage.getItem("productID");
+      localStorage.setItem("productID", id);
+      window.location.href = "cart.html";
+    });
+  }
+
     const relatedHTML = `
       <div class="related-products mt-5">
         <h3>Productos relacionados</h3>
@@ -346,15 +364,4 @@ document.addEventListener("DOMContentLoaded", async function () {
         Ocurrió un error al cargar la información del producto.
       </div>`;
   }
-});
-
-
-
- 
-const comprar = document.getElementById("button_buy");
-
-comprar.addEventListener("click", () => {
-  const id = localStorage.getItem("productID");
-  localStorage.setItem("productID", id);
-  window.location.href = "cart.html";
 });
