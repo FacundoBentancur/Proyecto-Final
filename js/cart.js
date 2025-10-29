@@ -1,39 +1,35 @@
-/*
-const CARRITO_KEY = "carrito";
-const $ = (s) => document.querySelector(s);
-
-
-if (localStorage.getItem(productID) !== "true") { 
-    then
-    show product en CartPosition.html :D
-};
-
-*/
-
 document.addEventListener("DOMContentLoaded", async () => {
   const container = document.getElementById("cartContent");
   const emptyState = document.getElementById("cartEmpty");
 
-  const cartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
+  // --- Tipo de cambio fijo (fallback) ---
+  const FX = {
+    USD_UYU: 40,         // 1 USD = 40 UYU
+    UYU_USD: 1 / 40      // 1 UYU = 0.025 USD
+  };
 
-  if (cartItems.length === 0) {
+  // Lee 'cartItems' (actual) o 'carrito' (compatibilidad)
+  const stored =
+    JSON.parse(localStorage.getItem("cartItems")) ||
+    JSON.parse(localStorage.getItem("carrito")) ||
+    [];
+
+  if (!stored.length) {
     emptyState.style.display = "block";
     return;
   }
-
   emptyState.style.display = "none";
 
-  // Crear tabla de carrito
+  // ---- Tabla ----
   const table = document.createElement("table");
   table.className = "table align-middle";
-
   table.innerHTML = `
     <thead>
       <tr>
         <th>Producto</th>
-        <th>Precio</th>
-        <th>Cantidad</th>
-        <th>Subtotal</th>
+        <th>Precio (moneda original)</th>
+        <th style="min-width:110px;">Cantidad</th>
+        <th>Subtotal<br><small class="text-muted">USD / UYU</small></th>
         <th></th>
       </tr>
     </thead>
@@ -41,82 +37,154 @@ document.addEventListener("DOMContentLoaded", async () => {
     <tfoot>
       <tr>
         <td colspan="3" class="text-end fw-bold">Total:</td>
-        <td id="cartTotal" class="fw-bold"></td>
+        <td class="fw-bold">
+          <div>USD <span id="totalUSD">0</span></div>
+          <div>UYU <span id="totalUYU">0</span></div>
+        </td>
         <td></td>
       </tr>
     </tfoot>
   `;
-
   container.appendChild(table);
 
   const tbody = document.getElementById("cartTableBody");
-  const totalEl = document.getElementById("cartTotal");
+  const totalUSDSpan = document.getElementById("totalUSD");
+  const totalUYUSpan = document.getElementById("totalUYU");
 
-  let total = 0;
+  const fmtUSD = new Intl.NumberFormat("es-UY", { style: "currency", currency: "USD", maximumFractionDigits: 2 });
+  const fmtUYU = new Intl.NumberFormat("es-UY", { style: "currency", currency: "UYU", maximumFractionDigits: 2 });
 
-  // Cargar cada producto según su ID
-  for (const item of cartItems) {
+  let totalUSD = 0;
+  let totalUYU = 0;
+
+  for (const item of stored) {
     const url = `https://japceibal.github.io/emercado-api/products/${item.id}.json`;
     const res = await fetch(url);
     const product = await res.json();
 
-    const subtotal = product.cost * item.quantity;
-    total += subtotal;
+    const unit = normalizeToUSDandUYU(product.currency, Number(product.cost), FX);
+    const subtotalUSD = unit.usd * item.quantity;
+    const subtotalUYU = unit.uyu * item.quantity;
+
+    totalUSD += subtotalUSD;
+    totalUYU += subtotalUYU;
 
     const tr = document.createElement("tr");
+    tr.dataset.id = String(product.id);
+    tr.dataset.unitUsd = String(unit.usd);
+    tr.dataset.unitUyu = String(unit.uyu);
+
     tr.innerHTML = `
       <td>
-        <img src="${product.images[0]}" width="80" class="me-2 rounded">
+        <img src="${product.images[0]}" width="80" class="me-2 rounded" alt="">
         ${product.name}
       </td>
-      <td>${product.currency} ${product.cost}</td>
+      <td>${product.currency} ${Number(product.cost).toLocaleString("es-UY")}</td>
       <td>
-        <input type="number" min="1" value="${item.quantity}" class="form-control form-control-sm w-auto" data-id="${product.id}">
+        <input type="number" min="1" value="${item.quantity}" class="form-control form-control-sm w-auto" inputmode="numeric">
       </td>
-      <td>${product.currency} <span class="subtotal">${subtotal}</span></td>
+      <td>
+        <div>USD <span class="subtotal-usd">${fmtUSD.format(subtotalUSD)}</span></div>
+        <div>UYU <span class="subtotal-uyu">${fmtUYU.format(subtotalUYU)}</span></div>
+      </td>
       <td>
         <button class="btn btn-outline-danger btn-sm" data-remove="${product.id}">
-          <i class="fa fa-trash"></i>
+          <i class="fa fa-trash" aria-hidden="true"></i>
+          <span class="visually-hidden">Quitar</span>
         </button>
       </td>
     `;
     tbody.appendChild(tr);
   }
 
-  totalEl.textContent = `${cartItems[0]?.currency || "USD"} ${total}`;
+  totalUSDSpan.textContent = fmtUSD.format(totalUSD);
+  totalUYUSpan.textContent = fmtUYU.format(totalUYU);
 
-  // --- Actualizar cantidad ---
+  // ---- Cambios de cantidad ----
   tbody.addEventListener("input", (e) => {
-    if (e.target.matches('input[type="number"]')) {
-      const id = Number(e.target.dataset.id);
-      const newQty = Number(e.target.value);
-      const row = e.target.closest("tr");
-      const price = Number(row.children[1].textContent.replace(/[^0-9.]/g, ""));
-      const subtotalEl = row.querySelector(".subtotal");
-      const newSubtotal = price * newQty;
-      subtotalEl.textContent = newSubtotal;
+    if (!(e.target instanceof HTMLInputElement) || e.target.type !== "number") return;
+    const row = e.target.closest("tr");
+    if (!row) return;
 
-      // Actualizar en localStorage
-      const cart = JSON.parse(localStorage.getItem("cartItems")) || [];
-      const prod = cart.find(p => p.id === id);
-      if (prod) prod.quantity = newQty;
-      localStorage.setItem("cartItems", JSON.stringify(cart));
+    const id = Number(row.dataset.id);
+    const qty = clampInt(Number(e.target.value), 1, 9999);
 
-      // Recalcular total
-      const allSubtotals = [...document.querySelectorAll(".subtotal")].map(s => Number(s.textContent));
-      totalEl.textContent = `${cartItems[0]?.currency || "USD"} ${allSubtotals.reduce((a, b) => a + b, 0)}`;
+    // Actualizo LS
+    const cart = readCartCompat();
+    const prod = cart.find((p) => p.id === id);
+    if (prod) {
+      prod.quantity = qty;
+      writeCartCompat(cart);
     }
+
+    // Recalculo fila
+    const unitUSD = Number(row.dataset.unitUsd);
+    const unitUYU = Number(row.dataset.unitUyu);
+    const subUSD = unitUSD * qty;
+    const subUYU = unitUYU * qty;
+
+    row.querySelector(".subtotal-usd").textContent = fmtUSD.format(subUSD);
+    row.querySelector(".subtotal-uyu").textContent = fmtUYU.format(subUYU);
+
+    // Totales
+    const allRows = [...tbody.querySelectorAll("tr")];
+    const sumUSD = allRows.reduce((acc, r) => acc + Number(r.dataset.unitUsd) * getQty(r), 0);
+    const sumUYU = allRows.reduce((acc, r) => acc + Number(r.dataset.unitUyu) * getQty(r), 0);
+    totalUSDSpan.textContent = fmtUSD.format(sumUSD);
+    totalUYUSpan.textContent = fmtUYU.format(sumUYU);
   });
 
-  // --- Eliminar producto ---
+  // ---- Eliminar producto ----
   tbody.addEventListener("click", (e) => {
-    if (e.target.closest("[data-remove]")) {
-      const id = Number(e.target.closest("[data-remove]").dataset.remove);
-      let cart = JSON.parse(localStorage.getItem("cartItems")) || [];
-      cart = cart.filter(p => p.id !== id);
-      localStorage.setItem("cartItems", JSON.stringify(cart));
-      window.location.reload();
-    }
-  });
-});
+    const btn = e.target.closest("[data-remove]");
+    if (!btn) return;
 
+    const id = Number(btn.dataset.remove);
+    let cart = readCartCompat().filter((p) => p.id !== id);
+    writeCartCompat(cart);
+
+    if (!cart.length) {
+      location.reload();
+      return;
+    }
+    btn.closest("tr").remove();
+
+    const allRows = [...tbody.querySelectorAll("tr")];
+    const sumUSD = allRows.reduce((acc, r) => acc + Number(r.dataset.unitUsd) * getQty(r), 0);
+    const sumUYU = allRows.reduce((acc, r) => acc + Number(r.dataset.unitUyu) * getQty(r), 0);
+    totalUSDSpan.textContent = fmtUSD.format(sumUSD);
+    totalUYUSpan.textContent = fmtUYU.format(sumUYU);
+  });
+
+  // ---------- Helpers ----------
+  function getQty(row) {
+    const inp = row.querySelector('input[type="number"]');
+    return clampInt(Number(inp.value), 1, 9999);
+  }
+
+  function clampInt(n, min, max) {
+    n = Number.isFinite(n) ? Math.round(n) : min;
+    return Math.min(Math.max(n, min), max);
+  }
+
+  function readCartCompat() {
+    return (
+      JSON.parse(localStorage.getItem("cartItems")) ||
+      JSON.parse(localStorage.getItem("carrito")) ||
+      []
+    );
+  }
+
+  function writeCartCompat(items) {
+    localStorage.setItem("cartItems", JSON.stringify(items));
+    localStorage.setItem("carrito", JSON.stringify(items));
+  }
+
+  function normalizeToUSDandUYU(currency, amount, r) {
+    // r: { USD_UYU, UYU_USD }
+    if (currency === "USD") return { usd: amount, uyu: amount * r.USD_UYU };
+    if (currency === "UYU" || currency === "UYU$" || currency === "$U") return { usd: amount * r.UYU_USD, uyu: amount };
+    // Por defecto, trato como USD
+    return { usd: amount, uyu: amount * r.USD_UYU };
+  }
+});
