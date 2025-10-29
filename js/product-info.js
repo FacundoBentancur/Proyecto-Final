@@ -1,4 +1,4 @@
-// product-info.js
+// product-info.js 
 document.addEventListener("DOMContentLoaded", async function () {
   try {
     // Obtener el ID del producto guardado en localStorage
@@ -205,13 +205,55 @@ document.addEventListener("DOMContentLoaded", async function () {
     // ====== Productos relacionados (Grid desktop + Carrusel mobile) ======
     let relatedItems = Array.isArray(product.relatedProducts) ? [...product.relatedProducts] : [];
 
-    const buyButtonHTML = `
+// ===== BOTÓN COMPRAR =====
+const buyButtonHTML = `
+  <div class="button-container text-center my-4">
+    <button id="button_buy" type="button" class="btn btn-primary btn-lg">
+      Comprar
+    </button>
+  </div>
+`;
+container.insertAdjacentHTML("beforeend", buyButtonHTML);
+
+const comprar = document.getElementById("button_buy");
+
+if (comprar) {
+  comprar.addEventListener("click", () => {
+    const id = product.id;
+
+    // Leer carrito actual o crear uno nuevo
+    const carrito = JSON.parse(localStorage.getItem("cartItems")) || [];
+
+    // Ver si el producto ya está en el carrito
+    const existe = carrito.find(item => item.id === id);
+
+    if (!existe) {
+      carrito.push({
+        id: id,
+        quantity: 1 // cantidad inicial
+      });
+    } else {
+      // Si ya está, solo incrementar cantidad
+      existe.quantity += 1;
+    }
+
+    // Guardar carrito actualizado
+    localStorage.setItem("cartItems", JSON.stringify(carrito));
+
+    // Redirigir
+    window.location.href = "cart.html";
+  });
+}
+
+
+/*    const buyButtonHTML = `
       <div class="button-container text-center my-4">
         <button id="button_buy" type="button" class="btn btn-primary btn-lg">
           Comprar
         </button>
       </div>
     `;
+    // Boton comprar
   container.insertAdjacentHTML("beforeend", buyButtonHTML);
 
     const comprar = document.getElementById("button_buy");
@@ -222,6 +264,8 @@ document.addEventListener("DOMContentLoaded", async function () {
       window.location.href = "cart.html";
     });
   }
+   // Boton Agregar al Carrito
+*/
 
     const relatedHTML = `
       <div class="related-products mt-5">
