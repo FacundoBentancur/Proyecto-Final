@@ -20,9 +20,13 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
   emptyState.style.display = "none";
 
-  // ---- Tabla ----
+  // ---- Tabla (envuelta para responsive) ----
+  const wrapper = document.createElement("div");
+  wrapper.className = "table-responsive cart-table-responsive";
+
   const table = document.createElement("table");
   table.className = "table align-middle";
+
   table.innerHTML = `
     <thead>
       <tr>
@@ -45,7 +49,9 @@ document.addEventListener("DOMContentLoaded", async () => {
       </tr>
     </tfoot>
   `;
-  container.appendChild(table);
+
+  wrapper.appendChild(table);
+  container.appendChild(wrapper);
 
   const tbody = document.getElementById("cartTableBody");
   const totalUSDSpan = document.getElementById("totalUSD");
