@@ -493,3 +493,18 @@ body.active .product-details.mb-4 p{
 body.login-page {
   padding-top: 5%;
 }
+
+#button_add_cart {
+   color: rgb(255, 255, 255);
+background-color: rgb(214, 100, 58);
+ border-radius: 10px;
+ border-color: #000000;
+  background: linear-gradient(
+    to right,
+    rgb(240, 120, 76) 0%,    
+    rgb(255, 200, 80) 50%,   
+    rgb(240, 120, 76) 100%    
+  );
+  color: white;
+  padding: 15px 30px;
+}

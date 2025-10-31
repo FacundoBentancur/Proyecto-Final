@@ -244,6 +244,42 @@ if (comprar) {
     window.location.href = "cart.html";
   });
 }
+// ===== BOTÓN AGREGAR AL CARRITO =====
+const addToCartHTML = `
+  <div class="button-container text-center my-4">
+    <button id="button_add_cart" type="button" class="btn btn-outline-primary btn-lg add-cart-btn">
+      <ion-icon name="cart"></ion-icon> Agregar al carrito
+    </button>
+  </div>
+`;
+
+container.insertAdjacentHTML("beforeend", addToCartHTML);
+
+const addToCart = document.getElementById("button_add_cart");
+
+if (addToCart) {
+  addToCart.addEventListener("click", () => {
+    const id = product.id;
+    const carrito = JSON.parse(localStorage.getItem("cartItems")) || [];
+    const existe = carrito.find(item => item.id === id);
+    if (!existe) {
+      carrito.push({ id: id, quantity: 1 });
+    } else {
+      existe.quantity += 1;
+    }
+
+    localStorage.setItem("cartItems", JSON.stringify(carrito));
+
+    addToCart.innerHTML = '<ion-icon name="checkmark-circle"></ion-icon> Agregado!';
+    addToCart.disabled = true;
+
+    setTimeout(() => {
+      addToCart.innerHTML = '<ion-icon name="cart"></ion-icon> Agregar al carrito';
+      addToCart.disabled = false;
+    }, 1500);
+  });
+}
+
 
 
 /*    const buyButtonHTML = `
