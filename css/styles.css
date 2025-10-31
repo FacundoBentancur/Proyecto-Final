@@ -1,17 +1,11 @@
-/* ==================== Fondo animado ==================== */
+/* Fondo animado */
 body {
-  min-height: 100vh;
-  height: auto;
+  height: 100vh;
   background: linear-gradient(135deg, #6ca4ff, #b4fff3);
   background-size: 600% 600%;
   animation: gradientMove 15s ease-in-out infinite;
-  overflow-x: hidden;
-
-  /* 🔒 Sin margen arriba para NO empujar la navbar */
-  margin-top: 0 !important;
 }
 
-/* Fuentes generales */
 .jumbotron,
 .card-body,
 .container,
@@ -22,15 +16,16 @@ body {
 .jumbotron .display-4 { font-weight: bold; }
 nav a { text-decoration: none; }
 
-/* Botón buscador */
+/* Asegura que el botón (lupa buscador) no agrande el input */
 #searchBtn { border: none; background: transparent; padding: 0 0.5rem; }
 
 .bd-placeholder-img {
   font-size: 1.125rem;
-  user-select: none;
+  text-anchor: middle;
+  -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none;
 }
 
-/* Animación fondo */
+/* Animación del degradado */
 @keyframes gradientMove {
   0% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }
@@ -39,28 +34,22 @@ nav a { text-decoration: none; }
 
 @media (min-width: 768px) { .bd-placeholder-img-lg { font-size: 3.5rem; } }
 
-/* ==================== Jumbotron ==================== */
+/* Jumbotron */
 .jumbotron {
-  height: 50vh;
-  padding: 5em 0;             /* ✅ válido y no empuja la navbar */
-  margin: 0;                   /* 🔒 sin margen arriba/abajo extra */
-  background: url('../img/cover_back.png') center/cover no-repeat;
-  color: black;
-  font-weight: bold;
+  height: 50vh; padding: 5em inherit; margin-bottom: 0;
+  background-color: #53C0FB; background: url('../img/cover_back.png') center/cover no-repeat;
+  color: black; font-weight: bold;
 }
-@media (min-width: 768px) {
-  .jumbotron { padding-top: 6rem; padding-bottom: 6rem; }
-}
+@media (min-width: 768px) { .jumbotron { padding-top: 6rem; padding-bottom: 6rem; } }
 .jumbotron p:last-child { margin-bottom: 0; }
+.jumbotron-heading { font-weight: 300; }
 .jumbotron .container {
-  max-width: 40rem;
-  background-color: rgba(255, 255, 255, 0.5);
-  border-radius: 10px;
-  text-shadow: 1px 1px 2px grey;
+  max-width: 40rem; background-color: rgba(255, 255, 255, 0.5);
+  border-radius: 10px; text-shadow: 1px 1px 2px grey;
 }
 .jumbotron .lead { font-size: 38px; }
 
-/* ==================== Footer ==================== */
+/* Footer / utilidades */
 footer { padding-top: 3rem; padding-bottom: 3rem; }
 footer p { margin-bottom: .25rem; }
 .site-header a { color: white; transition: ease-in-out color .15s; }
@@ -69,19 +58,22 @@ footer p { margin-bottom: .25rem; }
 .dropzone { border: 2px dashed #0087F7; border-radius: 5px; background: white; }
 .img-fit { max-height: 100%; }
 
-/* ==================== Utilidades ==================== */
 .alert {
-  position: fixed;
-  top: 80px;
-  max-width: 720px;
-  width: 90%;
-  left: 50%;
-  transform: translate(-50%, 0);
-  z-index: 2;
+  position: fixed; top: 80px; width: 50%; left: 50%; transform: translate(-50%, 0); z-index: 2;
 }
-@media (max-width: 576px) {
-  .alert { top: 64px; width: 94%; }
+
+.lds-ring {
+  display: inline-block; position: relative; width: 64px; height: 64px; top: 50%; left: 50%;
 }
+.lds-ring div {
+  box-sizing: border-box; display: block; position: absolute;
+  width: 51px; height: 51px; margin: 6px; border: 6px solid #fff; border-radius: 50%;
+  animation: lds-ring 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite; border-color: #fff transparent transparent transparent;
+}
+.lds-ring div:nth-child(1) { animation-delay: -0.45s; }
+.lds-ring div:nth-child(2) { animation-delay: -0.3s; }
+.lds-ring div:nth-child(3) { animation-delay: -0.15s; }
+@keyframes lds-ring { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
 .cursor-active { cursor: pointer; }
 .left { float: left; padding: 4px; background-color: rgba(255, 255, 255, 0.5); }
@@ -89,51 +81,26 @@ footer p { margin-bottom: .25rem; }
 .signin { width: 100%; max-width: 330px; padding: 15px; margin: auto; }
 
 #spinner-wrapper {
-  position: fixed;
-  background-color: rgba(0, 0, 0, 0.5);
-  width: 100%; height: 100%;
-  top: 0; left: 0;
-  z-index: 1021;
-  display: none;
-  align-items: center;
-  justify-content: center;
+  position: fixed; background-color: rgba(0, 0, 0, 0.5); width: 100%; height: 100%;
+  top: 0; left: 0; z-index: 1021; display: none;
 }
-#spinner-wrapper .lds-ring { top: auto; left: auto; }
 
-/* ==================== General ==================== */
 main { min-height: calc(100vh - 375px); }
 a.custom-card, a.custom-card:hover { color: inherit; text-decoration: inherit; }
 .checked { color: orange; }
 
-/* ==================== Login ==================== */
-/* ✅ ÚNICA página con padding superior para despegar del navbar */
-body.login-page {
-  padding-top: 5%;
-}
-
+/* Contenedor Login */
 #contenedorLogin {
-  background: #ffffff;
-  border-radius: 15px;
-  padding: 30px 30px 60px;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-  max-width: 960px;
-  width: 80%;
-  margin: auto;
-  position: relative;
-  z-index: 1;
-  max-height: 80vh;
-  min-height: 700px;
+  background: #ffffff; border-radius: 15px; padding: 30px 30px 60px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1); max-width: 960px; width: 80%; margin: auto;
+  position: relative; z-index: 1; max-height: 80vh; min-height: 700px;
 }
 #contenedorLogin main { min-height: auto; }
 
-/* ==================== Producto ==================== */
+/* Producto */
 .product-info {
-  padding: 2%;
-  border-radius: 3%;
-  max-width: 800px;
-  margin: 3% auto 0;
-  text-align: center;
-  background-color: #e1e7ec8a;
+  padding: 2%; border-radius: 3%; max-width: 800px; margin: 3% auto 0;
+  text-align: center; background-color: #e1e7ec8a;
 }
 .product-title { font-size: 2rem; font-weight: bold; margin-bottom: 0.2rem; }
 .product-category { font-size: 1rem; margin-bottom: 1.5rem; color: #6c757d; }
@@ -142,35 +109,76 @@ body.login-page {
 .product-details h4 { margin-bottom: 1rem; font-size: 2rem; }
 .product-details p { margin-bottom: 0.5rem; }
 
-/* ==================== Comentarios ==================== */
+/* Responsivo general de otras vistas */
+@media (min-width: 768px) and (max-width: 1024px) {
+  body { margin-top: 10%; }
+  #contenedorLogin { max-height: 80vh; }
+}
+@media (min-width: 320px) and (max-width: 568px) {
+  body { margin-top: 5%; margin-bottom: 10%; }
+  #contenedorLogin { width: 90%; padding: 20px 20px 50px; max-height: 90vh; }
+  footer p { font-size: 0.85rem; }
+  .mb-3 { font-size: 0.5rem; }
+}
+
+h2 { font-size: 1.2rem; font-weight: 600; color: #004080; margin-bottom: 12px; }
+
+/* Estrellas */
 .rating {
   display: flex; flex-direction: row-reverse; justify-content: left; margin-left: 5px; gap: 5px;
 }
 .rating input { display: none; }
 .rating label {
-  font-size: 2.5rem; color: #ddd; cursor: pointer;
-  transition: transform 0.2s, color 0.2s; text-shadow: 0 0 3px rgba(0,0,0,0.3);
+  font-size: 2.5rem; color: #ddd; cursor: pointer; transition: transform 0.2s, color 0.2s; text-shadow: 0 0 3px rgba(0,0,0,0.3);
 }
 .rating input:checked ~ label, .rating label:hover, .rating label:hover ~ label {
   color: #ffcc00; transform: scale(1.1);
 }
 
-/* ==================== Carrusel comentarios (mobile) ==================== */
+/* Form comentario */
+textarea {
+  width: 100%; height: 90px; margin: 12px 0; resize: none; padding: 10px;
+  border-radius: 8px; border: 1px solid #bbb; font-family: inherit; font-size: 0.95rem;
+  box-shadow: inset 0 1px 4px rgba(0,0,0,0.1);
+}
+button {
+  padding: 10px 18px; background: #0066cc; color: white; border: none; border-radius: 6px;
+  cursor: pointer; font-size: 0.95rem; font-weight: 600; transition: background 0.2s, transform 0.1s;
+}
+button:hover { background: #004c99; transform: translateY(-1px); }
+
+.button-container {
+display: flex;
+justify-content: center;
+align-items: center;
+margin-top: 5%;
+}
+
+/* -------- Comentarios -------- */
 #comentariosCarrusel, #comentariosLista { max-width: 800px; margin-left: auto; margin-right: auto; }
 
+/* Tarjeta comentario */
 .comentario-card {
   background: #fff; border-radius: 12px; padding: 18px; margin-bottom: 15px;
   box-shadow: 0 3px 8px rgba(0,0,0,0.12); animation: fadeIn 0.25s ease;
 }
 .comentario-card p { margin: 6px 0; font-size: 0.95rem; color: #333; }
 .estrellas { color: #ffcc00; font-size: 1.5rem; margin-bottom: 6px; text-shadow: 0 0 4px rgba(255, 240, 37, 0.2); }
-
 @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
 
-.comentarios-carrusel { position: relative; display: none; align-items: stretch; gap: 0; }
-.carrusel-viewport { flex: 1 1 auto; position: relative; z-index: 1; padding-left: 22%; padding-right: 22%; }
+/* --- Carrusel genérico (comentarios y relacionados mobile) --- */
+.comentarios-carrusel {
+  position: relative; display: none; /* visible solo en <=600px (CSS + JS fallback para comentarios) */
+  align-items: stretch; gap: 0;
+}
+.carrusel-viewport {
+  flex: 1 1 auto; position: relative; z-index: 1;
+  /* Dejo canal para que las barras no tapen el texto */
+  padding-left: 22%; padding-right: 22%;
+}
 .carrusel-viewport .comentario-card { margin-bottom: 0; }
 
+/* Barras traslúcidas */
 .carrusel-overlay {
   position: absolute; top: 0; bottom: 0; width: 22%; min-width: 44px;
   background: rgba(0, 0, 0, 0.06); display: flex; align-items: center; justify-content: center;
@@ -183,51 +191,69 @@ body.login-page {
 .carrusel-overlay:active { background: rgba(0, 0, 0, 0.14); }
 .carrusel-overlay .arrow { font-size: 1.6rem; line-height: 1; color: #0b3a73; text-shadow: 0 1px 2px rgba(255,255,255,0.6); pointer-events: none; }
 
+/* Indicadores del carrusel: por defecto ocultos */
 .indicadores { display: none; text-align: center; margin-top: 10px; }
-.indicadores .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #cbd5e1; margin: 0 3px; }
+.indicadores .dot {
+  display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #cbd5e1; margin: 0 3px;
+}
 .indicadores .dot.active { background: #3b82f6; }
 
+/* --- Modo lista por defecto (comentarios) --- */
 #comentariosLista { display: block; }
 
+/* --- Activar carrusel de comentarios en <= 600px de ancho, ocultar lista e indicadores visibles --- */
 @media (max-width: 600px) {
   #tituloComentario { text-align: center; }
   .rating { justify-content: center !important; margin-left: 0 !important; }
   #btnEnviar { display: block; margin-left: auto; margin-right: auto; }
 
-  #comentariosCarrusel { display: flex; }
-  #comentariosLista { display: none; }
+  #comentariosCarrusel { display: flex; }  /* carrusel visible */
+  #comentariosLista { display: none; }     /* lista oculta */
 
-  .indicadores { display: block; }
+  .indicadores { display: block; }         /* puntos visibles solo en carrusel */
 }
 
 /* ================== RELACIONADOS ================== */
+/* Título centrado */
 .related-products h3 { text-align: center; }
 
+/* Grid centrado (desktop/tablet) */
 #relatedGrid {
   display: flex;
-  justify-content: center;
+  justify-content: center;     /* centra el conjunto de cards */
   flex-wrap: wrap;
   gap: 12px;
   max-width: 980px;
   margin: 0 auto;
 }
 
-.related-products .card { max-width: 220px; margin: 0 6px; }
-.related-products .card-img-top {
-  height: 140px; object-fit: contain; padding: 8px;
-  background: #fff; border-bottom: 1px solid #eee;
+/* Cards más compactas */
+.related-products .card {
+  max-width: 220px;
+  margin: 0 6px;
 }
-#relatedCarrusel { display: none; }
 
+/* Imágenes más chicas dentro de la card */
+.related-products .card-img-top {
+  height: 140px;
+  object-fit: contain;
+  padding: 8px;
+  background: #fff;
+  border-bottom: 1px solid #eee;
+}
+
+/* Carrusel mobile oculto por defecto (se muestra en ≤600px) */
+#relatedCarrusel {
+  display: none;
+}
+
+/* En mobile: mostrar carrusel y ocultar grid */
 @media (max-width: 600px) {
   #relatedGrid { display: none; }
   #relatedCarrusel { display: flex; }
 }
-
-/* ==================== Modo oscuro ==================== */
-:root { --dark-mode-width: 60px; --dark-mode-height: 30px; }
-
-.dark-mode {
+/* Boton modo oscuro*/
+.dark-mode{
   width: var(--dark-mode-width);
   height: var(--dark-mode-height);
   display: flex;
@@ -236,33 +262,234 @@ body.login-page {
   background-color: #dfdfdf;
   transition: background-color 0.5s;
 }
-.dark-mode .circle {
-  background-color: white;
-  width: 37%; height: 80%;
-  border-radius: 999px;
-  display: flex; justify-content: center; align-items: center; flex-direction: column;
-  transform: translateX(10%); overflow: hidden; transition: transform 0.5s ease;
+:root{
+  --dark-mode-width:60px;
+  --dark-mode-height:30px;
 }
-.dark-mode .circle ion-icon { width: 70%; height: 70%; position: absolute; transition: transform 0.5s ease; }
-.dark-mode .circle .moon { transform: translateY(-120%); }
-body.active .circle { transform: translateX(160%); background-color: #2A2A2C; }
-body.active .circle .moon { transform: translateX(0); color: white; }
-body.active .circle .sun { transform: translateY(120%); }
-.dark-mode .circle .sun { color: #ffd000; }
-body.active .dark-mode { background-color: white; }
+ .dark-mode .circle {
+background-color: white;
+width: 37%;
+height: 80%;
+border-radius: 999px;
+display: flex;
+justify-content: center;
+align-items: center;
+flex-direction: column;
+transform: translateX(10%);
+overflow: hidden;
+transition: transform 0.5s ease;
+}
+.dark-mode .circle ion-icon{
+  width: 70%;
+  height: 70%;
+ position: absolute;
+ transition: transform 0.5s ease;
+}
+.dark-mode .circle .moon{
+  transform: translateY(-120%);
+}
+body.active .circle{
+  transform: translateX(160%);
+  background-color: #2A2A2C;
+}
+body.active .circle .moon{
+  transform: translateX(0);
+  color: white;
+}
+body.active .circle .sun{
+  transform: translateY(120%);
+}
+.dark-mode .circle .sun{
+    color: #ffd000;
+}
+body.active .dark-mode{
+  background-color: white
+}
+/* Ajustes del modo oscuroo*/
+body.active{
+ background: #575757;
+background: linear-gradient(175deg,rgb(54, 54, 54) 0%, rgb(0, 0, 0) 81%);
+}
+body.active .jumbotron.text-center{
+ background-image: url("../img/cover_back_black.png") !important;
+}
+body.active .album {
+  background: #000000 !important;
+  color: white !important;
+}
+body.active .btn.btn-light.btn-lg.btn-block {
+  background-color: #222 !important;
+  color: #bbbbbb !important;
+  border: 1px solid #313131 !important;
+}
+body.active .custom-card {
+  background-color: #111111; /* fondo oscuro */
+  color: #f0f0f0; /* texto claro */
+  border: 2px solid rgb(75, 75, 75);
+}
+body.active .card-text{
+  color: white;
+}
+body.active .m-3{
+  color: white;
+}
+body.active p.lead{
+  color: white;
+} 
+body.active .col-md-6mb-3 label{
+  color: white;
+}
+body.active h4.mb-3{
+  color: white;
+} 
+body.active a{
+  color: rgb(214, 100, 58);
+}
+body.active .card.cursor-active {
+  background: linear-gradient(to bottom, black 95%, rgb(64, 224, 117) 100%);
+}
+
+body.active .product-info {
+  background: linear-gradient(to bottom, black 95%, rgb(64, 224, 117) 100%);
+}
+
+body.active .product-info p{
+  color: white;
+}
+body.active .text-success{
+  color:white !important;
+}
+
+
+body.active .my-3{
+  color: white;
+}
+
+body.active h2{
+  color: white;
+}
+body.active label{
+  color: white;
+}
+body.active .btn.btn-primary.btn-lg{
+color: rgb(255, 255, 255);
+background-color: rgb(214, 100, 58);
+ border-radius: 100px;
+ border-color: #000000;
+  background: linear-gradient(
+    to right,
+    rgb(214, 100, 58) 0%,    
+    rgb(255, 200, 80) 50%,   
+    rgb(214, 100, 58) 100%    
+  );
+  color: white;
+  padding: 10px 20px;
+}
+body.active button.m-1.btn.btn-link{
+  color: rgb(214, 100, 58);
+}
+body.active .btn.btn-primary{
+  color: rgb(255, 255, 255);
+background-color: rgb(214, 100, 58);
+ border-radius: 100px;
+ border-color: #000000;
+  background: linear-gradient(
+    to right,
+    rgb(214, 100, 58) 0%,    
+    rgb(255, 200, 80) 50%,   
+    rgb(214, 100, 58) 100%    
+  );
+  color: white;
+  padding: 10px 20px;
+}
+body.active .card-img-top{
+  background-color: rgb(0, 0, 0);
+}
+body.active #btnEnviar{
+    color: rgb(255, 255, 255);
+background-color: rgb(214, 100, 58);
+ border-radius: 100px;
+ border-color: #000000;
+  background: linear-gradient(
+    to right,
+    rgb(214, 100, 58) 0%,    
+    rgb(255, 200, 80) 50%,   
+    rgb(214, 100, 58) 100%    
+  );
+  color: white;
+  padding: 10px 20px;
+}
+
+body.active h3{
+  color: white;
+} 
+
+body.active h5{
+  color: white;
+}
+body.active p.card-text{
+  color: white;
+}
+body.active .card-body p {
+  color: rgb(190, 190, 190) !important;
+}
+body.active .card-body{
+  background-color: #111111;
+}
+body.active .btn.btn-outline-secondary{
+ background-color: rgb(248, 248, 248);
+ color: black;
+}
+body.active .h4.mb-3{
+  color: white;
+}
+body.active .container p {
+  color: rgba(0, 0, 0, 0.685); 
+}
+body.active p{
+  color: black;
+}
+body.active .preLink {
+  color:rgba(214, 100, 58, 0.664) !important;
+}
 
 body.active {
-  background: linear-gradient(175deg, rgb(54,54,54) 0%, rgb(0,0,0) 81%);
-  color: inherit !important;
+  color: black !important;
 }
-body.active p, body.active b { color: inherit; }
+body.active b{
+  color: black;
+}
+body.active #comentariosLista{
+  color: black !important; 
+}
 
-body.active .dropdown-menu,
-body.active .dropdown-item { background-color: #2b2b2b; color: #eaeaea; }
-body.active .dropdown-item:hover { background-color: #3a3a3a; color: #fff; }
+body.active h1#categoria.my-3{
+  color: rgb(141, 141, 141);
+}
+body.active .contenedor{
+background-color: #222121 !important;
+border-radius: 20px;
+}
+body.active .btn.btn-outline-primary{
+  color: rgb(214, 100, 58);
+  border-color: rgb(214, 100, 58);
+}
+body.active .form-control.pr-5{
+  background-color: rgb(41, 41, 41);
+  color:white;
+}
+body.active .dropdown-item.d-flex.align-items-center.gap-2{
+  background-color: #363636;
+  color: white;
+}
+body.active .dropdown-menu.w-100.position-absolute.show{
+  background-color: #363636;
+}
+body.active .product-details.mb-4 p{
+  color: white;
+}
 
-/* ==================== Mejora de foco accesible ==================== */
-button:focus-visible, .btn:focus-visible {
-  outline: 2px solid #3b82f6;
-  outline-offset: 2px;
+/* Padding superior solo para login.html */
+body.login-page {
+  padding-top: 5%;
 }
