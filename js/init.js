@@ -39,3 +39,11 @@ let getJSONData = function(url){
         return result;
     });
 }
+
+function updateCartCount() {
+  const carrito = JSON.parse(localStorage.getItem("cartItems")) || [];
+  const total = carrito.reduce((acc, item) => acc + item.quantity, 0);
+
+  const badge = document.getElementById("cart-count");
+  if (badge) badge.textContent = total;
+}

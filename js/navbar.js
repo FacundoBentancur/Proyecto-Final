@@ -1,3 +1,4 @@
+// navbar.js
 document.addEventListener("DOMContentLoaded", function () {
   // ✅ Chequeo de login
   if (localStorage.getItem("loggedIn") !== "true") {
@@ -18,7 +19,6 @@ document.addEventListener("DOMContentLoaded", () => {
     function getAvatarSrc() {
       const fromLocal = localStorage.getItem("avatarLocal");
       if (fromLocal) return fromLocal;
-
       try {
         const perfil = JSON.parse(localStorage.getItem("perfil"));
         if (perfil && perfil.avatarDataUrl) return perfil.avatarDataUrl;
@@ -33,7 +33,7 @@ document.addEventListener("DOMContentLoaded", () => {
     liCarrito.innerHTML = `
       <a class="nav-link text-white d-flex align-items-center position-relative" href="cart.html">
         <i class="bi bi-cart" style="font-size: 1.3rem; position: relative;"></i>
-        <span id="cartCount"
+        <span id="cartBadge"
               class="badge bg-danger rounded-pill position-absolute"
               style="font-size: 0.75rem; top: 0; right: 0; transform: translate(40%, -40%);">
           0
@@ -63,35 +63,51 @@ document.addEventListener("DOMContentLoaded", () => {
       </ul>
     `;
 
-    // ✅ Insertar el carrito justo antes del usuario
     navbar.appendChild(liCarrito);
     navbar.appendChild(liUsuario);
 
-    // --- Función para actualizar el contador del carrito ---
+    // --- Actualizar contador del carrito ---
     function actualizarContadorCarrito() {
-      const carrito = JSON.parse(localStorage.getItem("carrito")) || [];
-      const badge = document.getElementById("cartCount");
-      if (!badge) return;
+      const raw =
+        localStorage.getItem("cartItems") ||
+        localStorage.getItem("carrito") ||
+        "[]";
 
-      // 🔢 Sumar cantidades (usando 'count' o 1 por producto)
-      let cantidad = 0;
-      for (const producto of carrito) {
-        cantidad += producto.count ? producto.count : 1;
+      let carrito;
+      try {
+        carrito = JSON.parse(raw);
+      } catch {
+        carrito = [];
       }
 
+      const badge = document.getElementById("cartBadge");
+      if (!badge) return;
+
+      // Compatibilidad: preferir 'quantity', luego 'count', luego 1
+      const cantidad = carrito.reduce(
+        (acc, p) => acc + (p.quantity ?? p.count ?? 1),
+        0
+      );
+
       badge.textContent = cantidad;
-      // ✅ Siempre visible, aunque esté en 0
       badge.style.display = "inline-block";
     }
 
-    // 🔁 Hacer accesible globalmente para otros scripts
+    // 🔁 Escuchar evento personalizado (se usa desde otros scripts)
+    window.addEventListener("carrito:actualizado", actualizarContadorCarrito);
+
+    // 🔁 Escuchar cambios directos en localStorage (para actualizaciones entre pestañas)
+    window.addEventListener("storage", (e) => {
+      if (e.key === "cartItems" || e.key === "carrito") {
+        actualizarContadorCarrito();
+      }
+    });
+
+    // ✅ Hacer accesible globalmente para otros scripts
     window.actualizarContadorCarrito = actualizarContadorCarrito;
 
-    // Llamar al cargar
+    // 🚀 Llamar al cargar
     actualizarContadorCarrito();
-
-    // Permitir actualización con evento personalizado
-    window.addEventListener("carrito:actualizado", actualizarContadorCarrito);
 
     // --- Actualizar avatar dinámicamente ---
     window.addEventListener("profile:avatar-updated", (ev) => {

@@ -190,6 +190,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   function writeCartCompat(items) {
     localStorage.setItem("cartItems", JSON.stringify(items));
     localStorage.setItem("carrito", JSON.stringify(items));
+    // Notificar a cualquier listener (navbar, product-info, etc.)
+    window.dispatchEvent(new Event("carrito:actualizado"));
   }
 
   function normalizeToUSDandUYU(currency, amount, r) {
