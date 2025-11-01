@@ -106,3 +106,17 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 });
+
+// Actualizar numerito del carrito en el navbar
+function updateCartBadge() {
+  const badge = document.getElementById("cartCount");
+  if (!badge) return;
+
+  const cart = JSON.parse(localStorage.getItem("cartItems")) || [];
+  const total = cart.reduce((sum, item) => sum + (item.quantity || 1), 0);
+
+  badge.textContent = total;
+  badge.style.display = total > 0 ? "inline-block" : "none";
+}
+document.addEventListener("DOMContentLoaded", updateCartBadge);
+

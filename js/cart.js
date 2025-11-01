@@ -1,4 +1,4 @@
-document.addEventListener("DOMContentLoaded", async () => { 
+document.addEventListener("DOMContentLoaded", async () => {
   const container = document.getElementById("cartContent");
   const emptyState = document.getElementById("cartEmpty");
 
@@ -139,8 +139,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     totalUSDSpan.textContent = fmtUSD.format(sumUSD);
     totalUYUSpan.textContent = fmtUYU.format(sumUYU);
 
-    // ---- Actualizar badge al cambiar cantidad ----
-    updateCartBadge();
+
   });
 
   // ---- Eliminar producto ----
@@ -151,6 +150,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const id = Number(btn.dataset.remove);
     let cart = readCartCompat().filter((p) => p.id !== id);
     writeCartCompat(cart);
+
 
     if (!cart.length) {
       location.reload();
@@ -164,11 +164,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     totalUSDSpan.textContent = fmtUSD.format(sumUSD);
     totalUYUSpan.textContent = fmtUYU.format(sumUYU);
 
-    // ---- Actualizar badge al eliminar producto ----
-    setTimeout(updateCartBadge, 0);
+  
   });
 
-  // ---- Helpers ----
+  // ---------- Helpers ----------
   function getQty(row) {
     const inp = row.querySelector('input[type="number"]');
     return clampInt(Number(inp.value), 1, 9999);
@@ -193,22 +192,10 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   function normalizeToUSDandUYU(currency, amount, r) {
+    // r: { USD_UYU, UYU_USD }
     if (currency === "USD") return { usd: amount, uyu: amount * r.USD_UYU };
     if (currency === "UYU" || currency === "UYU$" || currency === "$U") return { usd: amount * r.UYU_USD, uyu: amount };
+    // Por defecto, trato como USD
     return { usd: amount, uyu: amount * r.USD_UYU };
   }
-
-  // ---- Badge del carrito ----
-  function updateCartBadge() {
-    const badge = document.getElementById("cartBadge");
-    const cart = readCartCompat();
-    const totalItems = cart.reduce((acc, p) => acc + p.quantity, 0);
-    if (!badge) return;
-
-    badge.textContent = totalItems;
-    badge.style.display = "inline-block"; // siempre visible
-  }
-
-  // Inicializa badge al cargar
-  updateCartBadge();
 });

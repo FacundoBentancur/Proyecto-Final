@@ -239,6 +239,7 @@ if (comprar) {
 
     // Guardar carrito actualizado
     localStorage.setItem("cartItems", JSON.stringify(carrito));
+  window.dispatchEvent(new StorageEvent("storage", { key: "cartItems" }));
 
     // Redirigir
     window.location.href = "cart.html";
