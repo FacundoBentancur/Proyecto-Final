@@ -22,7 +22,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   // ---- Tabla (envuelta para responsive) ----
   const wrapper = document.createElement("div");
-  wrapper.className = "table-responsive cart-table-responsive";
+  wrapper.className = "table-responsive-md cart-table-responsive";
 
   const table = document.createElement("table");
   table.className = "table align-middle";
@@ -34,21 +34,25 @@ document.addEventListener("DOMContentLoaded", async () => {
     <thead>
       <tr>
         <th style="width:42%;">Producto</th>
-        <th style="width:20%;">Precio (moneda original)</th>
-        <th style="width:12%;">Cantidad</th>
+        <th style="width:20%;">Precio</th>
+        <th style="width:12%;">Cant.</th>
         <th style="width:22%;">Subtotal<br><small class="text-muted">USD / UYU</small></th>
         <th style="width:4%;"></th>
       </tr>
     </thead>
     <tbody id="cartTableBody"></tbody>
     <tfoot>
-      <tr>
-        <td colspan="2" class="text-end fw-bold">Total:</td>
+      <tr style="border-top:0 !important; border-bottom:0 !important;">
+        <td colspan="3"
+            class="text-end fw-bold"
+            style="border-top:0 !important; border-bottom:0 !important;">
+          Total:
+        </td>
         <td colspan="2" class="fw-bold text-start">
           <div>USD <span id="totalUSD">0</span></div>
           <div>UYU <span id="totalUYU">0</span></div>
         </td>
-        <td></td>
+        <td style="border-top:0 !important; border-bottom:0 !important;"></td>
       </tr>
     </tfoot>
   `;
