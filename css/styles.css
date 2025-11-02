@@ -111,11 +111,9 @@ a.custom-card, a.custom-card:hover { color: inherit; text-decoration: inherit; }
 
 /* Responsivo general de otras vistas */
 @media (min-width: 768px) and (max-width: 1024px) {
-  body { margin-top: 10%; }
   #contenedorLogin { max-height: 80vh; }
 }
 @media (min-width: 320px) and (max-width: 568px) {
-  body { margin-top: 5%; margin-bottom: 10%; }
   #contenedorLogin { width: 90%; padding: 20px 20px 50px; max-height: 90vh; }
   footer p { font-size: 0.85rem; }
   .mb-3 { font-size: 0.5rem; }
