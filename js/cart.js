@@ -26,22 +26,25 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   const table = document.createElement("table");
   table.className = "table align-middle";
+  // Fijar layout y ancho para evitar “saltos” por textos largos
+  table.style.tableLayout = "fixed";
+  table.style.width = "100%";
 
   table.innerHTML = `
     <thead>
       <tr>
-        <th>Producto</th>
-        <th>Precio (moneda original)</th>
-        <th style="min-width:110px;">Cantidad</th>
-        <th>Subtotal<br><small class="text-muted">USD / UYU</small></th>
-        <th></th>
+        <th style="width:42%;">Producto</th>
+        <th style="width:20%;">Precio (moneda original)</th>
+        <th style="width:12%;">Cantidad</th>
+        <th style="width:22%;">Subtotal<br><small class="text-muted">USD / UYU</small></th>
+        <th style="width:4%;"></th>
       </tr>
     </thead>
     <tbody id="cartTableBody"></tbody>
     <tfoot>
       <tr>
-        <td colspan="3" class="text-end fw-bold">Total:</td>
-        <td class="fw-bold">
+        <td colspan="2" class="text-end fw-bold">Total:</td>
+        <td colspan="2" class="fw-bold text-start">
           <div>USD <span id="totalUSD">0</span></div>
           <div>UYU <span id="totalUYU">0</span></div>
         </td>
@@ -82,14 +85,23 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     tr.innerHTML = `
       <td>
-        <img src="${product.images[0]}" width="80" class="me-2 rounded" alt="">
+        <img src="${product.images[0]}" width="72" class="me-2 rounded" alt="">
         ${product.name}
       </td>
-      <td>${product.currency} ${Number(product.cost).toLocaleString("es-UY")}</td>
-      <td>
-        <input type="number" min="1" value="${item.quantity}" class="form-control form-control-sm w-auto" inputmode="numeric">
+      <td style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+        ${product.currency} ${Number(product.cost).toLocaleString("es-UY")}
       </td>
       <td>
+        <input
+          type="number"
+          min="1"
+          value="${item.quantity}"
+          class="form-control form-control-sm text-center"
+          inputmode="numeric"
+          style="max-width:70px;"
+        >
+      </td>
+      <td style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
         <div>USD <span class="subtotal-usd">${fmtUSD.format(subtotalUSD)}</span></div>
         <div>UYU <span class="subtotal-uyu">${fmtUYU.format(subtotalUYU)}</span></div>
       </td>
