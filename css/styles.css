@@ -506,3 +506,124 @@ background-color: rgb(214, 100, 58);
   color: white;
   padding: 15px 30px;
 }
+
+/* Contenedor de botones flotantes (carrito + home) */
+#floatButtonsContainer {
+  position: fixed;
+  top: 12px;
+  left: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  z-index: 1060; /* suficiente arriba pero no excesivo */
+  pointer-events: none; /* por defecto no interfiere */
+}
+
+/* Cada botón */
+.float-btn {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: #1f41d6;
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+  transition: transform 0.15s ease, background-color 0.15s ease, opacity 0.35s ease;
+  opacity: 0;
+  transform: translateY(-6px);
+  pointer-events: none; /* no interactivo cuando está oculto */
+  border: none;
+}
+
+/* Badge en flotantes */
+#cartBadgeFloat {
+  position: absolute;
+  top: -6px;
+  right: -8px;
+  font-size: 0.75rem;
+}
+
+/* Estado visible (cuando la navbar no está visible) */
+#cartBubble.visible .float-btn,
+#homeBubble.visible .float-btn,
+#topBubble.visible .float-btn,
+#cartBubble.visible,
+#homeBubble.visible,
+#topBubble.visible {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto; /* ahora son interactivos */
+}
+
+/* Hover */
+.float-btn:hover {
+  transform: scale(1.05);
+  background-color: #0a58ca;
+}
+
+/* ==== POSICIONES INDIVIDUALES ==== */
+
+/* Carrito y Home (arriba a la izquierda) */
+#cartBubble,
+#homeBubble {
+  position: fixed;
+  left: 12px;
+  z-index: 1060;
+  opacity: 0;
+  transition: opacity 0.35s ease, transform 0.35s ease;
+  pointer-events: none;
+}
+
+#cartBubble { top: 12px; }
+#homeBubble { top: 74px; }
+
+/* Botón "Ir hacia arriba" (abajo derecha) */
+#topBubble {
+  position: fixed;
+  bottom: 30px;     /* distancia desde el borde inferior */
+  right: 25px;      /* distancia desde el borde derecho */
+  z-index: 1060;
+  opacity: 0;
+  transition: opacity 0.35s ease, transform 0.35s ease;
+  pointer-events: none;
+}
+
+/* Versión visible */
+#topBubble.visible {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+/* Modo oscuro (opcional) */
+body.active .float-btn {
+  background-color: #eb8005; 
+  color: #ffffff;
+}
+
+body.active .float-btn:hover {
+  background-color: #ce933a;
+}
+
+/* === Animación de rebote para el ícono del carrito === */
+@keyframes cartBounce {
+  0%, 100% {
+    transform: scale(1);
+  }
+  30% {
+    transform: scale(1.3);
+  }
+  60% {
+    transform: scale(0.9);
+  }
+  80% {
+    transform: scale(1.1);
+  }
+}
+
+.cart-bounce {
+  animation: cartBounce 0.5s ease;
+}
