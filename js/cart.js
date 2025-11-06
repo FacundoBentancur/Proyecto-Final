@@ -4,8 +4,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   // --- Tipo de cambio fijo (fallback) ---
   const FX = {
-    USD_UYU: 40,         // 1 USD = 40 UYU
-    UYU_USD: 1 / 40      // 1 UYU = 0.025 USD
+    USD_UYU: 40,
+    UYU_USD: 1 / 40
   };
 
   // Elementos de Costos / Envío
@@ -19,7 +19,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   const shippingRadios = () => [...document.querySelectorAll('input[name="shippingOption"]')];
 
-  // Lee 'cartItems' (actual) o 'carrito' (compatibilidad)
+  // Lee carrito
   const stored =
     JSON.parse(localStorage.getItem("cartItems")) ||
     JSON.parse(localStorage.getItem("carrito")) ||
@@ -42,7 +42,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   table.style.tableLayout = "fixed";
   table.style.width = "100%";
 
-  // Nota: se eliminó el <tfoot> con "Total (sin envío)"
   table.innerHTML = `
     <thead>
       <tr>
@@ -83,20 +82,11 @@ document.addEventListener("DOMContentLoaded", async () => {
         <img src="${product.images[0]}" width="72" class="me-2 rounded" alt="">
         ${product.name}
       </td>
-      <td style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
-        ${product.currency} ${Number(product.cost).toLocaleString("es-UY")}
+      <td>${product.currency} ${Number(product.cost).toLocaleString("es-UY")}</td>
+      <td>
+        <input type="number" min="1" value="${item.quantity}" class="form-control form-control-sm text-center" style="max-width:70px;">
       </td>
       <td>
-        <input
-          type="number"
-          min="1"
-          value="${item.quantity}"
-          class="form-control form-control-sm text-center"
-          inputmode="numeric"
-          style="max-width:70px;"
-        >
-      </td>
-      <td style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
         <div>USD <span class="subtotal-usd">${fmtUSD.format(subtotalUSD)}</span></div>
         <div>UYU <span class="subtotal-uyu">${fmtUYU.format(subtotalUYU)}</span></div>
       </td>
@@ -110,7 +100,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     tbody.appendChild(tr);
   }
 
-  // Inicializar "Costos" con el subtotal calculado desde la tabla
   paintCosts(getCurrentSubtotal());
 
   // ---- Cambios de cantidad ----
@@ -122,7 +111,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     const id = Number(row.dataset.id);
     const qty = clampInt(Number(e.target.value), 1, 9999);
 
-    // Actualizo LS
     const cart = readCartCompat();
     const prod = cart.find((p) => p.id === id);
     if (prod) {
@@ -130,7 +118,6 @@ document.addEventListener("DOMContentLoaded", async () => {
       writeCartCompat(cart);
     }
 
-    // Recalculo fila
     const unitUSD = Number(row.dataset.unitUsd);
     const unitUYU = Number(row.dataset.unitUyu);
     const subUSD = unitUSD * qty;
@@ -139,10 +126,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     row.querySelector(".subtotal-usd").textContent = fmtUSD.format(subUSD);
     row.querySelector(".subtotal-uyu").textContent = fmtUYU.format(subUYU);
 
-    // ---- Actualizar "Costos" en tiempo real ----
     paintCosts(getCurrentSubtotal());
-
-    // ---- Actualizar badge ----
     updateCartBadge();
   });
 
@@ -160,27 +144,16 @@ document.addEventListener("DOMContentLoaded", async () => {
       return;
     }
     btn.closest("tr").remove();
-
-    // ---- Actualizar "Costos" tras eliminar ----
     paintCosts(getCurrentSubtotal());
-
-    // ---- Actualizar badge ----
     setTimeout(updateCartBadge, 0);
   });
 
-  // ---- Cambio de tipo de envío: recalcula Costos en tiempo real ----
+  // ---- Cambio de tipo de envío ----
   shippingRadios().forEach(r =>
-    r.addEventListener("change", () => {
-      paintCosts(getCurrentSubtotal());
-    })
+    r.addEventListener("change", () => paintCosts(getCurrentSubtotal()))
   );
 
   // ---- Helpers ----
-  function getQty(row) {
-    const inp = row.querySelector('input[type="number"]');
-    return clampInt(Number(inp.value), 1, 9999);
-  }
-
   function clampInt(n, min, max) {
     n = Number.isFinite(n) ? Math.round(n) : min;
     return Math.min(Math.max(n, min), max);
@@ -208,8 +181,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   function getCurrentSubtotal() {
     const rows = [...tbody.querySelectorAll("tr")];
-    const usd = rows.reduce((acc, r) => acc + Number(r.dataset.unitUsd) * getQty(r), 0);
-    const uyu = rows.reduce((acc, r) => acc + Number(r.dataset.unitUyu) * getQty(r), 0);
+    const usd = rows.reduce((acc, r) => acc + Number(r.dataset.unitUsd) * Number(r.querySelector("input").value), 0);
+    const uyu = rows.reduce((acc, r) => acc + Number(r.dataset.unitUyu) * Number(r.querySelector("input").value), 0);
     return { usd, uyu };
   }
 
@@ -254,4 +227,62 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   updateCartBadge();
+
+  // === Forma de pago dinámica ===
+  const radiosPago = document.querySelectorAll('input[name="paymentMethod"]');
+  radiosPago.forEach(r => {
+    r.addEventListener("change", updatePaymentFields);
+  });
+
+  updatePaymentFields();
+
+  function updatePaymentFields() {
+    const paymentDetails = document.getElementById("paymentDetails");
+    if (!paymentDetails) return;
+
+    const selected = document.querySelector('input[name="paymentMethod"]:checked');
+    if (!selected) {
+      paymentDetails.innerHTML = "";
+      return;
+    }
+
+    if (selected.value === "credit") {
+      paymentDetails.innerHTML = `
+        <form id="creditForm" class="row g-3 mt-2">
+          <div class="col-md-6 col-lg-4">
+            <label class="form-label">Número de tarjeta</label>
+            <input type="text" class="form-control" id="cardNumber" inputmode="numeric"
+                   maxlength="19" placeholder="1234 5678 9012 3456" required>
+          </div>
+          <div class="col-md-3 col-lg-2">
+            <label class="form-label">Vencimiento</label>
+            <input type="text" class="form-control" id="cardExpiry" placeholder="MM/AA" maxlength="5" required>
+          </div>
+          <div class="col-md-2 col-lg-2">
+            <label class="form-label">CVV</label>
+            <input type="text" class="form-control" id="cardCVV" inputmode="numeric" maxlength="4" placeholder="123" required>
+          </div>
+          <div class="col-12">
+            <label class="form-label">Nombre del titular</label>
+            <input type="text" class="form-control" id="cardHolder" placeholder="Nombre del titular de la tarjeta" required>
+          </div>
+        </form>
+      `;
+    } else if (selected.value === "bank") {
+      paymentDetails.innerHTML = `
+        <form id="bankForm" class="row g-3 mt-2">
+          <div class="col-md-6 col-lg-5">
+            <label class="form-label">Número de cuenta</label>
+            <input type="text" class="form-control" id="bankAccount" placeholder="Ej: 00123456789" required>
+          </div>
+          <div class="col-md-6 col-lg-5">
+            <label class="form-label">Banco</label>
+            <input type="text" class="form-control" id="bankName" placeholder="Ej: BROU, Itaú, Santander..." required>
+          </div>
+        </form>
+      `;
+    } else {
+      paymentDetails.innerHTML = "";
+    }
+  }
 });
