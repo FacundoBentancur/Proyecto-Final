@@ -1,13 +1,12 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <title>eMercado - Carrito</title>
 
-  <!-- Fuentes y estilos del proyecto -->
-  <link href="https://fonts.googleapis.com/css?family=Raleway:300,300i,400,400i,700,700i,900,900i" rel="stylesheet">
+  <!-- Fuentes y estilos -->
+  <link href="https://fonts.googleapis.com/css?family=Raleway:300,400,700,900" rel="stylesheet">
   <link href="css/bootstrap.min.css" rel="stylesheet">
   <link href="css/font-awesome.min.css" rel="stylesheet">
   <link href="css/styles.css" rel="stylesheet">
@@ -20,8 +19,7 @@
   <!-- NAVBAR -->
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark p-1">
     <div class="container">
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-        aria-controls="navbarNav" aria-expanded="false" aria-label="Alternar navegación">
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
         <span class="navbar-toggler-icon"></span>
       </button>
 
@@ -31,14 +29,6 @@
           <li class="nav-item"><a class="nav-link" href="categories.html">Categorías</a></li>
           <li class="nav-item"><a class="nav-link" href="sell.html">Vender</a></li>
         </ul>
-
-        <!-- Switch modo oscuro -->
-        <div class="dark-mode">
-          <div class="circle">
-            <ion-icon class="sun" name="sunny"></ion-icon>
-            <ion-icon class="moon" name="moon"></ion-icon>
-          </div>
-        </div>
       </div>
     </div>
   </nav>
@@ -48,14 +38,11 @@
     <div class="container">
       <h2 class="mb-4">Mi carrito</h2>
 
-      <!-- CONTENEDOR PRINCIPAL DEL CARRITO -->
+      <!-- CARRITO -->
       <section id="cartContent" class="vstack gap-3">
-        <!-- Estado vacío -->
         <div id="cartEmpty" class="card border-0 bg-transparent">
           <div class="p-5 text-center" style="border: 2px dashed rgba(0,0,0,0.15); border-radius: 12px;">
-            <div class="mb-2" style="font-size: 2rem; line-height: 1;">
-              <ion-icon name="cart-outline" aria-hidden="true"></ion-icon>
-            </div>
+            <div class="mb-2" style="font-size: 2rem;"><ion-icon name="cart-outline"></ion-icon></div>
             <h5 class="mb-1">Tu carrito está vacío</h5>
             <p class="text-muted mb-3">Cuando agregues productos, los verás listados aquí.</p>
             <a class="btn btn-primary" href="categories.html">Explorar categorías</a>
@@ -63,10 +50,43 @@
         </div>
       </section>
 
-      <!-- PANEL DE CHECKOUT CENTRADO -->
+      <!-- CHECKOUT -->
       <section id="checkoutPanel" class="mt-4" style="display:none;">
-        <!-- Tipo de envío -->
-        <div class="checkout-card">
+
+
+<!-- DIRECCIÓN DE ENVÍO -->
+<div class="checkout-card">
+  <h5 class="mb-3">Dirección de envío</h5>
+  <form id="shippingForm" class="row g-3">
+    <div class="col-md-6">
+      <label class="form-label">Calle</label>
+      <input type="text" class="form-control" id="shipStreet" placeholder="Ej: Av. Italia" required>
+    </div>
+    <div class="col-md-3">
+      <label class="form-label">Número</label>
+      <input type="text" class="form-control" id="shipNumber" placeholder="Ej: 2456" required>
+    </div>
+    <div class="col-md-3">
+      <label class="form-label">Esquina</label>
+      <input type="text" class="form-control" id="shipCorner" placeholder="Ej: Bv. Artigas" required>
+    </div>
+
+    <div class="col-md-6">
+      <label class="form-label">Localidad</label>
+      <input type="text" class="form-control" id="shipLocality" placeholder="Ej: Pocitos" required>
+    </div>
+
+    <div class="col-md-6">
+      <label class="form-label">Ciudad</label>
+      <input type="text" class="form-control" id="shipCity" placeholder="Ej: Montevideo" required>
+    </div>
+  </form>
+</div>
+
+
+
+        <!-- TIPO DE ENVÍO -->
+        <div class="checkout-card mt-4">
           <h5 class="mb-3">Tipo de envío</h5>
           <div class="form-check">
             <input class="form-check-input" type="radio" name="shippingOption" id="shipPremium" value="0.15">
@@ -83,8 +103,24 @@
           <p class="text-muted small mt-2 mb-0">El costo de envío se calcula como un porcentaje del subtotal.</p>
         </div>
 
-        <!-- Costos -->
-        <div class="checkout-card">
+        <!-- FORMA DE PAGO -->
+        <div class="checkout-card mt-4">
+          <h5 class="mb-3">💳 Forma de pago</h5>
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="paymentMethod" id="payCredit" value="credit" checked>
+            <label class="form-check-label" for="payCredit">Tarjeta de crédito</label>
+          </div>
+          <div class="form-check mb-2">
+            <input class="form-check-input" type="radio" name="paymentMethod" id="payBank" value="bank">
+            <label class="form-check-label" for="payBank">Transferencia bancaria</label>
+          </div>
+
+          <!-- Campos dinámicos -->
+          <div id="paymentDetails" class="mt-3"></div>
+        </div>
+
+        <!-- COSTOS -->
+        <div class="checkout-card mt-4">
           <h5 class="mb-3">Costos</h5>
           <div class="d-flex justify-content-between">
             <span>Subtotal</span>
@@ -124,23 +160,15 @@
   <footer class="text-muted">
     <div class="container">
       <p class="float-end"><a href="#">Volver arriba</a></p>
-      <p class="preLink">
-        Este sitio forma parte de
-        <a href="https://jovenesaprogramar.edu.uy/" target="_blank">Jóvenes a Programar</a>
-      </p>
+      <p>Este sitio forma parte de <a href="https://jovenesaprogramar.edu.uy/" target="_blank">Jóvenes a Programar</a></p>
     </div>
   </footer>
-
-  <div id="spinner-wrapper">
-    <div class="lds-ring"><div></div><div></div><div></div><div></div></div>
-  </div>
 
   <!-- Scripts -->
   <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
   <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
   <script src="js/bootstrap.bundle.min.js"></script>
   <script src="js/init.js"></script>
-  <script src="js/modo_oscuro.js"></script>
   <script src="js/cart.js"></script>
 </body>
 </html>
