@@ -36,38 +36,7 @@ main .container {
   box-sizing: border-box;
 }
 
-/* ===== Panel de checkout centrado ===== */
-#checkoutPanel {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 520px));
-  justify-content: center;
-  gap: 20px;
-  max-width: 1100px;
-  margin: 0 auto;
-  width: 100%;
-}
-
-/* Tarjetas */
-.checkout-card {
-  background: #ffffff;
-  border-radius: 15px;
-  padding: 20px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-  border: 1px solid rgba(0, 0, 0, 0.06);
-}
-.checkout-card h5 { margin-bottom: 12px; }
-.checkout-card .form-check + .form-check { margin-top: 6px; }
-
-/* ===== Móvil ===== */
-@media (max-width: 767px) {
-  #checkoutPanel {
-    grid-template-columns: 1fr;
-    padding-left: 12px;
-    padding-right: 12px;
-  }
-}
-
-/* ===== Tabla ===== */
+/* ===== Tabla desktop ===== */
 #cartContent table.table {
   table-layout: auto !important;
   width: 100%;
@@ -81,7 +50,7 @@ main .container {
   padding-right: 2.25rem;
 }
 
-/* Celda "Producto" */
+/* Celda "Producto" desktop */
 #cartContent td:first-child {
   display: flex;
   align-items: center;
@@ -107,10 +76,96 @@ main .container {
   font-size: 0.95rem;
 }
 
-/* Hover de filas */
+/* Hover filas */
 #cartContent table.table tbody tr:hover {
   background: #dff6e3;
   transition: background 0.2s ease;
+}
+
+/* ===== Panel de checkout centrado ===== */
+#checkoutPanel {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 520px));
+  justify-content: center;
+  gap: 20px;
+  max-width: 1100px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* Tarjetas checkout */
+.checkout-card {
+  background: #ffffff;
+  border-radius: 15px;
+  padding: 20px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+}
+.checkout-card h5 { margin-bottom: 12px; }
+.checkout-card .form-check + .form-check { margin-top: 6px; }
+
+/* ===== Responsive ≤ 991px (tablet) ===== */
+@media (max-width: 991.98px) {
+  #checkoutPanel {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* ===== Responsive ≤ 767px (mobile) ===== */
+@media (max-width: 767.98px) {
+  /* tabla en modo "cards" */
+  #cartContent { width: 100%; padding-left: 12px; padding-right: 12px; max-width: 900px; }
+  #cartContent table.table thead { display: none; }
+
+  #cartContent table.table tbody tr {
+    display: block;
+    background: #ffffff;
+    border-radius: 15px;
+    margin-bottom: 15px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+    padding: 12px;
+  }
+
+  #cartContent table.table td {
+    display: block;
+    width: 100%;
+    text-align: center;
+    padding: 0.6rem 0.4rem;
+    border: none;                /* limpia divisores horizontales */
+  }
+
+  /* imagen arriba y nombre debajo */
+  #cartContent td:first-child {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 10px;
+  }
+  #cartContent td:first-child img {
+    width: 120px;
+    height: auto;
+    margin-bottom: 6px;
+  }
+
+  /* input cantidad más chico */
+  #cartContent input[type="number"] {
+    width: 64px;
+    font-size: 0.95rem;
+    margin: 6px auto 0;
+  }
+
+  /* botón eliminar separado */
+  #cartContent td:last-child { margin-top: 6px; }
+
+  /* checkout apilado y centrado */
+  #checkoutPanel {
+    grid-template-columns: 1fr;
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+  /* tipografía un poco más compacta */
+  .checkout-card { padding: 16px; }
 }
 
 /* ===== Modo oscuro ===== */
@@ -121,15 +176,14 @@ body.active .checkout-card {
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
 }
 
-/* Color del texto y encabezados en modo oscuro */
+/* texto tabla en oscuro */
 body.active #cartContent table.table th,
 body.active #cartContent table.table td {
-  color: #ffffff !important;        /* <== fuerza texto blanco */
+  color: #ffffff !important;
 }
 
-body.active .checkout-card {
-  color: #e6e6e6;
-}
+/* tarjetas en oscuro */
+body.active .checkout-card { color: #e6e6e6; }
 
 body.active #cartEmpty .p-5 {
   background: #111111;
@@ -137,14 +191,5 @@ body.active #cartEmpty .p-5 {
   color: #e6e6e6;
 }
 
-body.active #cartContent table.table tbody tr:hover {
-  background: #1b1b1b;
-}
-
-body.active #cartContent table.table tbody tr {
-  background: #0e0e0e;
-}
-
-body.active tfoot td {
-  color: #fff;
-}
+body.active #cartContent table.table tbody tr:hover { background: #1b1b1b; }
+body.active #cartContent table.table tbody tr { background: #0e0e0e; }
