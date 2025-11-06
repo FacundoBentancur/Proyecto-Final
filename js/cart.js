@@ -8,6 +8,17 @@ document.addEventListener("DOMContentLoaded", async () => {
     UYU_USD: 1 / 40      // 1 UYU = 0.025 USD
   };
 
+  // Elementos de Costos / Envío
+  const checkoutPanel = document.getElementById("checkoutPanel");
+  const costSubUSD = document.getElementById("costSubUSD");
+  const costSubUYU = document.getElementById("costSubUYU");
+  const costShipUSD = document.getElementById("costShipUSD");
+  const costShipUYU = document.getElementById("costShipUYU");
+  const costTotalUSD = document.getElementById("costTotalUSD");
+  const costTotalUYU = document.getElementById("costTotalUYU");
+
+  const shippingRadios = () => [...document.querySelectorAll('input[name="shippingOption"]')];
+
   // Lee 'cartItems' (actual) o 'carrito' (compatibilidad)
   const stored =
     JSON.parse(localStorage.getItem("cartItems")) ||
@@ -16,9 +27,11 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   if (!stored.length) {
     emptyState.style.display = "block";
+    if (checkoutPanel) checkoutPanel.style.display = "none";
     return;
   }
   emptyState.style.display = "none";
+  if (checkoutPanel) checkoutPanel.style.display = "block";
 
   // ---- Tabla (envuelta para responsive) ----
   const wrapper = document.createElement("div");
@@ -26,10 +39,10 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   const table = document.createElement("table");
   table.className = "table align-middle";
-  // Fijar layout y ancho para evitar “saltos” por textos largos
   table.style.tableLayout = "fixed";
   table.style.width = "100%";
 
+  // Nota: se eliminó el <tfoot> con "Total (sin envío)"
   table.innerHTML = `
     <thead>
       <tr>
@@ -41,34 +54,15 @@ document.addEventListener("DOMContentLoaded", async () => {
       </tr>
     </thead>
     <tbody id="cartTableBody"></tbody>
-    <tfoot>
-      <tr style="border-top:0 !important; border-bottom:0 !important;">
-        <td colspan="3"
-            class="text-end fw-bold"
-            style="border-top:0 !important; border-bottom:0 !important;">
-          Total:
-        </td>
-        <td colspan="2" class="fw-bold text-start">
-          <div>USD <span id="totalUSD">0</span></div>
-          <div>UYU <span id="totalUYU">0</span></div>
-        </td>
-        <td style="border-top:0 !important; border-bottom:0 !important;"></td>
-      </tr>
-    </tfoot>
   `;
 
   wrapper.appendChild(table);
   container.appendChild(wrapper);
 
   const tbody = document.getElementById("cartTableBody");
-  const totalUSDSpan = document.getElementById("totalUSD");
-  const totalUYUSpan = document.getElementById("totalUYU");
 
   const fmtUSD = new Intl.NumberFormat("es-UY", { style: "currency", currency: "USD", maximumFractionDigits: 2 });
   const fmtUYU = new Intl.NumberFormat("es-UY", { style: "currency", currency: "UYU", maximumFractionDigits: 2 });
-
-  let totalUSD = 0;
-  let totalUYU = 0;
 
   for (const item of stored) {
     const url = `https://japceibal.github.io/emercado-api/products/${item.id}.json`;
@@ -78,9 +72,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     const unit = normalizeToUSDandUYU(product.currency, Number(product.cost), FX);
     const subtotalUSD = unit.usd * item.quantity;
     const subtotalUYU = unit.uyu * item.quantity;
-
-    totalUSD += subtotalUSD;
-    totalUYU += subtotalUYU;
 
     const tr = document.createElement("tr");
     tr.dataset.id = String(product.id);
@@ -119,8 +110,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     tbody.appendChild(tr);
   }
 
-  totalUSDSpan.textContent = fmtUSD.format(totalUSD);
-  totalUYUSpan.textContent = fmtUYU.format(totalUYU);
+  // Inicializar "Costos" con el subtotal calculado desde la tabla
+  paintCosts(getCurrentSubtotal());
 
   // ---- Cambios de cantidad ----
   tbody.addEventListener("input", (e) => {
@@ -148,14 +139,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     row.querySelector(".subtotal-usd").textContent = fmtUSD.format(subUSD);
     row.querySelector(".subtotal-uyu").textContent = fmtUYU.format(subUYU);
 
-    // Totales
-    const allRows = [...tbody.querySelectorAll("tr")];
-    const sumUSD = allRows.reduce((acc, r) => acc + Number(r.dataset.unitUsd) * getQty(r), 0);
-    const sumUYU = allRows.reduce((acc, r) => acc + Number(r.dataset.unitUyu) * getQty(r), 0);
-    totalUSDSpan.textContent = fmtUSD.format(sumUSD);
-    totalUYUSpan.textContent = fmtUYU.format(sumUYU);
+    // ---- Actualizar "Costos" en tiempo real ----
+    paintCosts(getCurrentSubtotal());
 
-    // ---- Actualizar badge al cambiar cantidad ----
+    // ---- Actualizar badge ----
     updateCartBadge();
   });
 
@@ -174,15 +161,19 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
     btn.closest("tr").remove();
 
-    const allRows = [...tbody.querySelectorAll("tr")];
-    const sumUSD = allRows.reduce((acc, r) => acc + Number(r.dataset.unitUsd) * getQty(r), 0);
-    const sumUYU = allRows.reduce((acc, r) => acc + Number(r.dataset.unitUyu) * getQty(r), 0);
-    totalUSDSpan.textContent = fmtUSD.format(sumUSD);
-    totalUYUSpan.textContent = fmtUYU.format(sumUYU);
+    // ---- Actualizar "Costos" tras eliminar ----
+    paintCosts(getCurrentSubtotal());
 
-    // ---- Actualizar badge al eliminar producto ----
+    // ---- Actualizar badge ----
     setTimeout(updateCartBadge, 0);
   });
+
+  // ---- Cambio de tipo de envío: recalcula Costos en tiempo real ----
+  shippingRadios().forEach(r =>
+    r.addEventListener("change", () => {
+      paintCosts(getCurrentSubtotal());
+    })
+  );
 
   // ---- Helpers ----
   function getQty(row) {
@@ -206,7 +197,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   function writeCartCompat(items) {
     localStorage.setItem("cartItems", JSON.stringify(items));
     localStorage.setItem("carrito", JSON.stringify(items));
-    // Notificar a cualquier listener (navbar, product-info, etc.)
     window.dispatchEvent(new Event("carrito:actualizado"));
   }
 
@@ -216,17 +206,52 @@ document.addEventListener("DOMContentLoaded", async () => {
     return { usd: amount, uyu: amount * r.USD_UYU };
   }
 
-  // ---- Badge del carrito ----
+  function getCurrentSubtotal() {
+    const rows = [...tbody.querySelectorAll("tr")];
+    const usd = rows.reduce((acc, r) => acc + Number(r.dataset.unitUsd) * getQty(r), 0);
+    const uyu = rows.reduce((acc, r) => acc + Number(r.dataset.unitUyu) * getQty(r), 0);
+    return { usd, uyu };
+  }
+
+  function getSelectedShippingRate() {
+    const selected = document.querySelector('input[name="shippingOption"]:checked');
+    return selected ? Number(selected.value) : null;
+  }
+
+  function paintCosts(sub) {
+    costSubUSD.textContent = fmtUSD.format(sub.usd);
+    costSubUYU.textContent = fmtUYU.format(sub.uyu);
+
+    const rate = getSelectedShippingRate();
+    if (rate === null) {
+      costShipUSD.textContent = "—";
+      costShipUYU.textContent = "—";
+      costTotalUSD.textContent = fmtUSD.format(sub.usd);
+      costTotalUYU.textContent = fmtUYU.format(sub.uyu);
+      return;
+    }
+
+    const shipUSD = sub.usd * rate;
+    const shipUYU = sub.uyu * rate;
+
+    costShipUSD.textContent = fmtUSD.format(shipUSD);
+    costShipUYU.textContent = fmtUYU.format(shipUYU);
+
+    const totalUSD = sub.usd + shipUSD;
+    const totalUYU = sub.uyu + shipUYU;
+
+    costTotalUSD.textContent = fmtUSD.format(totalUSD);
+    costTotalUYU.textContent = fmtUYU.format(totalUYU);
+  }
+
   function updateCartBadge() {
     const badge = document.getElementById("cartBadge");
     const cart = readCartCompat();
     const totalItems = cart.reduce((acc, p) => acc + p.quantity, 0);
     if (!badge) return;
-
     badge.textContent = totalItems;
-    badge.style.display = "inline-block"; // siempre visible
+    badge.style.display = "inline-block";
   }
 
-  // Inicializa badge al cargar
   updateCartBadge();
 });

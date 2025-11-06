@@ -50,16 +50,70 @@
 
       <!-- CONTENEDOR PRINCIPAL DEL CARRITO -->
       <section id="cartContent" class="vstack gap-3">
-        <!-- Estado vacío integrado (no es alerta fija ni popup) -->
+        <!-- Estado vacío -->
         <div id="cartEmpty" class="card border-0 bg-transparent">
           <div class="p-5 text-center" style="border: 2px dashed rgba(0,0,0,0.15); border-radius: 12px;">
-            <!-- Icono (ionicons) -->
             <div class="mb-2" style="font-size: 2rem; line-height: 1;">
               <ion-icon name="cart-outline" aria-hidden="true"></ion-icon>
             </div>
             <h5 class="mb-1">Tu carrito está vacío</h5>
             <p class="text-muted mb-3">Cuando agregues productos, los verás listados aquí.</p>
             <a class="btn btn-primary" href="categories.html">Explorar categorías</a>
+          </div>
+        </div>
+      </section>
+
+      <!-- PANEL DE CHECKOUT CENTRADO -->
+      <section id="checkoutPanel" class="mt-4" style="display:none;">
+        <!-- Tipo de envío -->
+        <div class="checkout-card">
+          <h5 class="mb-3">Tipo de envío</h5>
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="shippingOption" id="shipPremium" value="0.15">
+            <label class="form-check-label" for="shipPremium">Premium 2 a 5 días (15%)</label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="shippingOption" id="shipExpress" value="0.07">
+            <label class="form-check-label" for="shipExpress">Express 5 a 8 días (7%)</label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="shippingOption" id="shipStandard" value="0.05">
+            <label class="form-check-label" for="shipStandard">Standard 12 a 15 días (5%)</label>
+          </div>
+          <p class="text-muted small mt-2 mb-0">El costo de envío se calcula como un porcentaje del subtotal.</p>
+        </div>
+
+        <!-- Costos -->
+        <div class="checkout-card">
+          <h5 class="mb-3">Costos</h5>
+          <div class="d-flex justify-content-between">
+            <span>Subtotal</span>
+            <div class="text-end">
+              <div>USD <span id="costSubUSD">0</span></div>
+              <div>UYU <span id="costSubUYU">0</span></div>
+            </div>
+          </div>
+          <hr>
+          <div class="d-flex justify-content-between">
+            <span>Costo de envío</span>
+            <div class="text-end">
+              <div>USD <span id="costShipUSD">—</span></div>
+              <div>UYU <span id="costShipUYU">—</span></div>
+            </div>
+          </div>
+          <hr>
+          <div class="d-flex justify-content-between fw-bold">
+            <span>Total</span>
+            <div class="text-end">
+              <div>USD <span id="costTotalUSD">0</span></div>
+              <div>UYU <span id="costTotalUYU">0</span></div>
+            </div>
+          </div>
+
+          <div class="d-grid mt-3">
+            <button id="btnFinalizar" class="btn btn-success" type="button">
+              <i class="bi bi-check2-circle me-1"></i> Finalizar compra
+            </button>
           </div>
         </div>
       </section>
