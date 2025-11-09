@@ -306,6 +306,20 @@ function validarCompra(){
       campo.classList.remove("is-invalid");
     }
   }
+    const envioSeleccionado = document.querySelector('input[name="shippingOption"]:checked');
+  if (!envioSeleccionado) {
+    alert("⚠️ Seleccioná un tipo de envío.");
+    return false;
+  }
+
+   const cantidades = document.querySelectorAll(".cantidad-producto");
+  for (let cantidad of cantidades) {
+    if (parseInt(cantidad.value) <= 0 || isNaN(cantidad.value)) {
+      alert("⚠️ La cantidad de cada producto debe ser mayor a 0.");
+      return false;
+    }
+  }
+
 const pagoSeleccionado = document.querySelector('input[name="paymentMethod"]:checked');
   if (!pagoSeleccionado){
     alert("Seleccioná una forma de pago");
