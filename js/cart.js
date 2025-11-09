@@ -286,3 +286,38 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   }
 });
+
+// ---- Añadimos el evento al boton de finalizar compra ----
+document.getElementById("btnFinalizar").addEventListener("click", function (){
+if (validarCompra()){
+  alert("¡Compra exitosa!")
+} else {
+  alert(" Por favor, completá todos los campos requeridos antes de finalizar la compra.")
+}
+});
+// ---- Revisamos que cada campo este completo ----
+function validarCompra(){
+  const camposDireccion = document.querySelectorAll("#shippingForm .form-control");
+  for(let campo of camposDireccion){
+    if (campo.value.trim() === ""){
+      campo.classList.add("is-invalid");
+      return false;
+    } else {
+      campo.classList.remove("is-invalid");
+    }
+  }
+const pagoSeleccionado = document.querySelector('input[name="paymentMethod"]:checked');
+  if (!pagoSeleccionado){
+    alert("Seleccioná una forma de pago");
+    return false;
+  }
+ 
+  if (pagoSeleccionado.value === "bank"){
+    const cuenta = document.getElementById("numero-cuenta")?.value.trim();
+    if (!cuenta){
+      alert("ingresá el numero de cuenta bancaria");
+      return false;
+    }
+  }
+  return true;
+}
