@@ -369,37 +369,7 @@ body.active h2{
 body.active label{
   color: white;
 }
-body.active .btn.btn-primary.btn-lg{
-color: rgb(255, 255, 255);
-background-color: rgb(214, 100, 58);
- border-radius: 100px;
- border-color: #000000;
-  background: linear-gradient(
-    to right,
-    rgb(214, 100, 58) 0%,    
-    rgb(255, 200, 80) 50%,   
-    rgb(214, 100, 58) 100%    
-  );
-  color: white;
-  padding: 10px 20px;
-}
-body.active button.m-1.btn.btn-link{
-  color: rgb(214, 100, 58);
-}
-body.active .btn.btn-primary{
-  color: rgb(255, 255, 255);
-background-color: rgb(214, 100, 58);
- border-radius: 100px;
- border-color: #000000;
-  background: linear-gradient(
-    to right,
-    rgb(214, 100, 58) 0%,    
-    rgb(255, 200, 80) 50%,   
-    rgb(214, 100, 58) 100%    
-  );
-  color: white;
-  padding: 10px 20px;
-}
+
 body.active .card-img-top{
   background-color: rgb(0, 0, 0);
 }
@@ -490,21 +460,6 @@ body.active .product-details.mb-4 p{
 /* Padding superior solo para login.html */
 body.login-page {
   padding-top: 5%;
-}
-
-#button_add_cart {
-   color: rgb(255, 255, 255);
-background-color: rgb(214, 100, 58);
- border-radius: 10px;
- border-color: #000000;
-  background: linear-gradient(
-    to right,
-    rgb(240, 120, 76) 0%,    
-    rgb(255, 200, 80) 50%,   
-    rgb(240, 120, 76) 100%    
-  );
-  color: white;
-  padding: 15px 30px;
 }
 
 /* Contenedor de botones flotantes (carrito + home) */
@@ -598,7 +553,7 @@ background-color: rgb(214, 100, 58);
   pointer-events: auto;
 }
 
-/* Modo oscuro (opcional) */
+/* Modo oscuro */
 body.active .float-btn {
   background-color: #eb8005; 
   color: #ffffff;
@@ -626,4 +581,93 @@ body.active .float-btn:hover {
 
 .cart-bounce {
   animation: cartBounce 0.5s ease;
+}
+
+/* ===== BOTÓN DOBLE (Comprar + Agregar al carrito) ===== */
+
+.dual-button-container {
+  display: flex;
+  width: 100%;
+  max-width: 420px;
+  margin: 25px auto;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.2);
+}
+
+/* Botones unificados */
+.dual-btn {
+  padding: 16px;
+  font-size: 1.05rem;
+  border: none;
+  cursor: pointer;
+  transition: background 0.25s ease, transform 0.15s ease;
+}
+
+/* Comprar → más ancho */
+.left-btn {
+  flex: 2;
+  background: #1f41d6;
+  color: white;
+}
+
+/* Agregar al carrito → mitad de tamaño */
+.right-btn {
+  flex: 0.5;
+  background: #0a58ca;
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Icono dentro del botón pequeño */
+.add-cart-icon {
+  font-size: 1.5rem;
+}
+
+/* Hover */
+.dual-btn:hover {
+  filter: brightness(1.12);
+  transform: scale(1.02);
+}
+
+/* Estado deshabilitado (cuando se agrega al carrito) */
+.right-btn:disabled {
+  filter: brightness(0.8);
+  cursor: default;
+  transform: none;
+}
+
+/* ===== MODO OSCURO para botones doble ===== */
+body.active .dual-button-container {
+  box-shadow: 0 4px 14px rgba(255,255,255,0.15);
+}
+
+body.active .left-btn {
+  background: #eb8005;   /* naranja modo oscuro */
+  color: white;
+}
+
+body.active .right-btn {
+  background: #eb8005;   /* naranja más claro */
+  color: white;
+}
+
+body.active .dual-btn:hover {
+  filter: brightness(1.15);
+}
+
+/* Ajustes responsivos */
+@media (max-width: 480px) {
+  .dual-button-container {
+    max-width: 100%;
+    border-radius: 10px;
+  }
+
+  .dual-btn {
+    padding: 14px;
+    font-size: 0.95rem;
+  }
 }

@@ -205,26 +205,34 @@ document.addEventListener("DOMContentLoaded", async function () {
     // ====== Productos relacionados (Grid desktop + Carrusel mobile) ======
     let relatedItems = Array.isArray(product.relatedProducts) ? [...product.relatedProducts] : [];
 
-// ===== BOTÓN COMPRAR =====
-const buyButtonHTML = `
-  <div class="button-container text-center my-4">
-    <button id="button_buy" type="button" class="btn btn-primary btn-lg">
+// ===== BOTÓN DOBLE (COMPRAR + AGREGAR) =====
+const dualButtonsHTML = `
+  <div class="dual-button-container my-4">
+
+    <button id="button_buy" type="button" class="dual-btn left-btn">
       Comprar ahora
     </button>
+
+    <button id="button_add_cart" type="button" class="dual-btn right-btn" title="Añadir al carrito">
+      <span class="add-cart-icon">🛒</span> +
+    </button>
+
   </div>
 `;
-container.insertAdjacentHTML("beforeend", buyButtonHTML);
 
+container.insertAdjacentHTML("beforeend", dualButtonsHTML);
+
+
+// ===== LÓGICA DEL BOTÓN COMPRAR =====
 document.getElementById("button_buy")?.addEventListener("click", () => {
   const id = product.id;
   const carrito = JSON.parse(localStorage.getItem("cartItems")) || [];
 
-  // Buscar si el producto ya existe
-  const existente = carrito.find(item => item.id === id);
-  if (existente) {
-    existente.quantity += 1;
+  let existe = carrito.find(item => item.id === id);
+  if (existe) {
+    existe.quantity += 1;
   } else {
-    carrito.push({ id, quantity: 1 });
+    carrito.push({ id: id, quantity: 1 });
   }
 
   localStorage.setItem("cartItems", JSON.stringify(carrito));
@@ -232,43 +240,37 @@ document.getElementById("button_buy")?.addEventListener("click", () => {
   window.location.href = "cart.html";
 });
 
-// ===== BOTÓN AGREGAR AL CARRITO =====
-const addToCartHTML = `
-  <div class="button-container text-center my-4">
-    <button id="button_add_cart" type="button" class="btn btn-outline-primary btn-lg add-cart-btn">
-      <ion-icon name="cart"></ion-icon> Agregar al carrito
-    </button>
-  </div>
-`;
 
-container.insertAdjacentHTML("beforeend", addToCartHTML);
-
+// ===== LÓGICA DEL BOTÓN AGREGAR AL CARRITO =====
 const addToCart = document.getElementById("button_add_cart");
 
 if (addToCart) {
   addToCart.addEventListener("click", () => {
     const id = product.id;
     const carrito = JSON.parse(localStorage.getItem("cartItems")) || [];
-    const existe = carrito.find(item => item.id === id);
-    if (!existe) {
-      carrito.push({ id: id, quantity: 1 });
-    } else {
+
+    let existe = carrito.find(item => item.id === id);
+    if (existe) {
       existe.quantity += 1;
+    } else {
+      carrito.push({ id: id, quantity: 1 });
     }
 
     localStorage.setItem("cartItems", JSON.stringify(carrito));
     updateCartCount();
     window.dispatchEvent(new Event("carrito:actualizado"));
-    
-    addToCart.innerHTML = '<ion-icon name="checkmark-circle"></ion-icon> Agregado!';
+
+    // Animación feedback
+    addToCart.innerHTML = `<span class="cart-icon">✔️</span> Listo!`;
     addToCart.disabled = true;
 
     setTimeout(() => {
-      addToCart.innerHTML = '<ion-icon name="cart"></ion-icon> Agregar al carrito';
+      addToCart.innerHTML = `<span class="cart-icon">🛒</span> +`;
       addToCart.disabled = false;
-    }, 1500);
+    }, 1200);
   });
 }
+
 
     const relatedHTML = `
       <div class="related-products mt-5">
