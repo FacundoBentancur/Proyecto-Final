@@ -63,10 +63,15 @@ document.addEventListener("DOMContentLoaded", async () => {
   const fmtUSD = new Intl.NumberFormat("es-UY", { style: "currency", currency: "USD", maximumFractionDigits: 2 });
   const fmtUYU = new Intl.NumberFormat("es-UY", { style: "currency", currency: "UYU", maximumFractionDigits: 2 });
 
+  // === AHORA CARGAMOS LOS PRODUCTOS DESDE LOS JSON LOCALES ===
   for (const item of stored) {
-    const url = `https://japceibal.github.io/emercado-api/products/${item.id}.json`;
-    const res = await fetch(url);
-    const product = await res.json();
+    const url = `${PRODUCT_INFO_URL}${item.id}${EXT_TYPE}`;
+    const res = await getJSONData(url);
+    if (res.status !== "ok") {
+      console.error("No se pudo cargar el producto del carrito:", item.id, res.data);
+      continue;
+    }
+    const product = res.data;
 
     const unit = normalizeToUSDandUYU(product.currency, Number(product.cost), FX);
     const subtotalUSD = unit.usd * item.quantity;
@@ -84,7 +89,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       </td>
       <td>${product.currency} ${Number(product.cost).toLocaleString("es-UY")}</td>
       <td>
-        <input type="number" min="1" value="${item.quantity}" class="form-control form-control-sm text-center" style="max-width:70px;">
+        <input type="number" min="1" value="${item.quantity}" class="form-control form-control-sm text-center cantidad-producto" style="max-width:70px;">
       </td>
       <td>
         <div>USD <span class="subtotal-usd">${fmtUSD.format(subtotalUSD)}</span></div>
@@ -289,11 +294,11 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 // ---- Añadimos el evento al boton de finalizar compra ----
 document.getElementById("btnFinalizar").addEventListener("click", function (){
-if (validarCompra()){
-  alert("¡Compra exitosa!")
-} else {
-  alert(" Por favor, completá todos los campos requeridos antes de finalizar la compra.")
-}
+  if (validarCompra()){
+    alert("¡Compra exitosa!")
+  } else {
+    alert(" Por favor, completá todos los campos requeridos antes de finalizar la compra.")
+  }
 });
 // ---- Revisamos que cada campo este completo ----
 function validarCompra(){
@@ -306,13 +311,13 @@ function validarCompra(){
       campo.classList.remove("is-invalid");
     }
   }
-    const envioSeleccionado = document.querySelector('input[name="shippingOption"]:checked');
+  const envioSeleccionado = document.querySelector('input[name="shippingOption"]:checked');
   if (!envioSeleccionado) {
     alert("⚠️ Seleccioná un tipo de envío.");
     return false;
   }
 
-   const cantidades = document.querySelectorAll(".cantidad-producto");
+  const cantidades = document.querySelectorAll(".cantidad-producto");
   for (let cantidad of cantidades) {
     if (parseInt(cantidad.value) <= 0 || isNaN(cantidad.value)) {
       alert("⚠️ La cantidad de cada producto debe ser mayor a 0.");
@@ -320,7 +325,7 @@ function validarCompra(){
     }
   }
 
-const pagoSeleccionado = document.querySelector('input[name="paymentMethod"]:checked');
+  const pagoSeleccionado = document.querySelector('input[name="paymentMethod"]:checked');
   if (!pagoSeleccionado){
     alert("Seleccioná una forma de pago");
     return false;
