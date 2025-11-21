@@ -1,6 +1,7 @@
+// cart.js
 document.addEventListener("DOMContentLoaded", async () => { 
-  const container = document.getElementById("cartContent");
-  const emptyState = document.getElementById("cartEmpty");
+  const container   = document.getElementById("cartContent");
+  const emptyState  = document.getElementById("cartEmpty");
 
   // --- Tipo de cambio fijo (fallback) ---
   const FX = {
@@ -10,27 +11,28 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   // Elementos de Costos / Envío
   const checkoutPanel = document.getElementById("checkoutPanel");
-  const costSubUSD = document.getElementById("costSubUSD");
-  const costSubUYU = document.getElementById("costSubUYU");
-  const costShipUSD = document.getElementById("costShipUSD");
-  const costShipUYU = document.getElementById("costShipUYU");
-  const costTotalUSD = document.getElementById("costTotalUSD");
-  const costTotalUYU = document.getElementById("costTotalUYU");
+  const costSubUSD    = document.getElementById("costSubUSD");
+  const costSubUYU    = document.getElementById("costSubUYU");
+  const costShipUSD   = document.getElementById("costShipUSD");
+  const costShipUYU   = document.getElementById("costShipUYU");
+  const costTotalUSD  = document.getElementById("costTotalUSD");
+  const costTotalUYU  = document.getElementById("costTotalUYU");
 
   const shippingRadios = () => [...document.querySelectorAll('input[name="shippingOption"]')];
 
-  // Lee carrito
+  // Lee carrito (compat: cartItems / carrito)
   const stored =
     JSON.parse(localStorage.getItem("cartItems")) ||
     JSON.parse(localStorage.getItem("carrito")) ||
     [];
 
   if (!stored.length) {
-    emptyState.style.display = "block";
+    if (emptyState) emptyState.style.display = "block";
     if (checkoutPanel) checkoutPanel.style.display = "none";
     return;
   }
-  emptyState.style.display = "none";
+
+  if (emptyState)  emptyState.style.display  = "none";
   if (checkoutPanel) checkoutPanel.style.display = "block";
 
   // ---- Tabla (envuelta para responsive) ----
@@ -40,7 +42,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const table = document.createElement("table");
   table.className = "table align-middle";
   table.style.tableLayout = "fixed";
-  table.style.width = "100%";
+  table.style.width       = "100%";
 
   table.innerHTML = `
     <thead>
@@ -63,7 +65,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const fmtUSD = new Intl.NumberFormat("es-UY", { style: "currency", currency: "USD", maximumFractionDigits: 2 });
   const fmtUYU = new Intl.NumberFormat("es-UY", { style: "currency", currency: "UYU", maximumFractionDigits: 2 });
 
-  // === AHORA CARGAMOS LOS PRODUCTOS DESDE LOS JSON LOCALES ===
+  // === Cargamos los productos del carrito desde los JSON locales ===
   for (const item of stored) {
     const url = `${PRODUCT_INFO_URL}${item.id}${EXT_TYPE}`;
     const res = await getJSONData(url);
@@ -78,7 +80,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const subtotalUYU = unit.uyu * item.quantity;
 
     const tr = document.createElement("tr");
-    tr.dataset.id = String(product.id);
+    tr.dataset.id      = String(product.id);
     tr.dataset.unitUsd = String(unit.usd);
     tr.dataset.unitUyu = String(unit.uyu);
 
@@ -89,7 +91,12 @@ document.addEventListener("DOMContentLoaded", async () => {
       </td>
       <td>${product.currency} ${Number(product.cost).toLocaleString("es-UY")}</td>
       <td>
-        <input type="number" min="1" value="${item.quantity}" class="form-control form-control-sm text-center cantidad-producto" style="max-width:70px;">
+        <input
+          type="number"
+          min="1"
+          value="${item.quantity}"
+          class="form-control form-control-sm text-center cantidad-producto"
+          style="max-width:70px;">
       </td>
       <td>
         <div>USD <span class="subtotal-usd">${fmtUSD.format(subtotalUSD)}</span></div>
@@ -105,6 +112,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     tbody.appendChild(tr);
   }
 
+  // Pinta la sección de costos inicial
   paintCosts(getCurrentSubtotal());
 
   // ---- Cambios de cantidad ----
@@ -113,7 +121,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const row = e.target.closest("tr");
     if (!row) return;
 
-    const id = Number(row.dataset.id);
+    const id  = Number(row.dataset.id);
     const qty = clampInt(Number(e.target.value), 1, 9999);
 
     const cart = readCartCompat();
@@ -125,8 +133,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     const unitUSD = Number(row.dataset.unitUsd);
     const unitUYU = Number(row.dataset.unitUyu);
-    const subUSD = unitUSD * qty;
-    const subUYU = unitUYU * qty;
+    const subUSD  = unitUSD * qty;
+    const subUYU  = unitUYU * qty;
 
     row.querySelector(".subtotal-usd").textContent = fmtUSD.format(subUSD);
     row.querySelector(".subtotal-uyu").textContent = fmtUYU.format(subUYU);
@@ -145,9 +153,11 @@ document.addEventListener("DOMContentLoaded", async () => {
     writeCartCompat(cart);
 
     if (!cart.length) {
+      // Si quedó vacío, recargamos para mostrar el estado "sin productos"
       location.reload();
       return;
     }
+
     btn.closest("tr").remove();
     paintCosts(getCurrentSubtotal());
     setTimeout(updateCartBadge, 0);
@@ -158,7 +168,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     r.addEventListener("change", () => paintCosts(getCurrentSubtotal()))
   );
 
-  // ---- Helpers ----
+  // ---- Helpers internos ----
   function clampInt(n, min, max) {
     n = Number.isFinite(n) ? Math.round(n) : min;
     return Math.min(Math.max(n, min), max);
@@ -175,19 +185,29 @@ document.addEventListener("DOMContentLoaded", async () => {
   function writeCartCompat(items) {
     localStorage.setItem("cartItems", JSON.stringify(items));
     localStorage.setItem("carrito", JSON.stringify(items));
+    // Avisamos al resto de la app (navbar flotante, etc.)
     window.dispatchEvent(new Event("carrito:actualizado"));
   }
 
   function normalizeToUSDandUYU(currency, amount, r) {
     if (currency === "USD") return { usd: amount, uyu: amount * r.USD_UYU };
-    if (currency === "UYU" || currency === "UYU$" || currency === "$U") return { usd: amount * r.UYU_USD, uyu: amount };
+    if (currency === "UYU" || currency === "UYU$" || currency === "$U") {
+      return { usd: amount * r.UYU_USD, uyu: amount };
+    }
+    // Moneda desconocida -> asumimos similar a USD
     return { usd: amount, uyu: amount * r.USD_UYU };
   }
 
   function getCurrentSubtotal() {
     const rows = [...tbody.querySelectorAll("tr")];
-    const usd = rows.reduce((acc, r) => acc + Number(r.dataset.unitUsd) * Number(r.querySelector("input").value), 0);
-    const uyu = rows.reduce((acc, r) => acc + Number(r.dataset.unitUyu) * Number(r.querySelector("input").value), 0);
+    const usd = rows.reduce(
+      (acc, r) => acc + Number(r.dataset.unitUsd) * Number(r.querySelector("input").value),
+      0
+    );
+    const uyu = rows.reduce(
+      (acc, r) => acc + Number(r.dataset.unitUyu) * Number(r.querySelector("input").value),
+      0
+    );
     return { usd, uyu };
   }
 
@@ -202,8 +222,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     const rate = getSelectedShippingRate();
     if (rate === null) {
-      costShipUSD.textContent = "—";
-      costShipUYU.textContent = "—";
+      costShipUSD.textContent  = "—";
+      costShipUYU.textContent  = "—";
       costTotalUSD.textContent = fmtUSD.format(sub.usd);
       costTotalUYU.textContent = fmtUYU.format(sub.uyu);
       return;
@@ -224,8 +244,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   function updateCartBadge() {
     const badge = document.getElementById("cartBadge");
-    const cart = readCartCompat();
-    const totalItems = cart.reduce((acc, p) => acc + p.quantity, 0);
+    const cart  = readCartCompat();
+    const totalItems = cart.reduce((acc, p) => acc + (p.quantity ?? p.count ?? 1), 0);
     if (!badge) return;
     badge.textContent = totalItems;
     badge.style.display = "inline-block";
@@ -292,51 +312,74 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 });
 
-// ---- Añadimos el evento al boton de finalizar compra ----
-document.getElementById("btnFinalizar").addEventListener("click", function (){
-  if (validarCompra()){
-    alert("¡Compra exitosa!")
+
+// ---- Evento del botón "Finalizar compra" ----
+document.getElementById("btnFinalizar")?.addEventListener("click", function () {
+  if (validarCompra()) {
+    alert("¡Compra exitosa!");
   } else {
-    alert(" Por favor, completá todos los campos requeridos antes de finalizar la compra.")
+    alert("Por favor, completá todos los campos requeridos antes de finalizar la compra.");
   }
 });
-// ---- Revisamos que cada campo este completo ----
-function validarCompra(){
+
+
+// ---- Validaciones de checkout ----
+function validarCompra() {
+  // Dirección / envío
   const camposDireccion = document.querySelectorAll("#shippingForm .form-control");
-  for(let campo of camposDireccion){
-    if (campo.value.trim() === ""){
+  for (let campo of camposDireccion) {
+    if (campo.value.trim() === "") {
       campo.classList.add("is-invalid");
       return false;
     } else {
       campo.classList.remove("is-invalid");
     }
   }
+
+  // Tipo de envío
   const envioSeleccionado = document.querySelector('input[name="shippingOption"]:checked');
   if (!envioSeleccionado) {
     alert("⚠️ Seleccioná un tipo de envío.");
     return false;
   }
 
+  // Cantidades de productos
   const cantidades = document.querySelectorAll(".cantidad-producto");
   for (let cantidad of cantidades) {
-    if (parseInt(cantidad.value) <= 0 || isNaN(cantidad.value)) {
+    const v = parseInt(cantidad.value, 10);
+    if (v <= 0 || isNaN(v)) {
       alert("⚠️ La cantidad de cada producto debe ser mayor a 0.");
       return false;
     }
   }
 
+  // Forma de pago
   const pagoSeleccionado = document.querySelector('input[name="paymentMethod"]:checked');
-  if (!pagoSeleccionado){
-    alert("Seleccioná una forma de pago");
+  if (!pagoSeleccionado) {
+    alert("Seleccioná una forma de pago.");
     return false;
   }
- 
-  if (pagoSeleccionado.value === "bank"){
-    const cuenta = document.getElementById("numero-cuenta")?.value.trim();
-    if (!cuenta){
-      alert("ingresá el numero de cuenta bancaria");
+
+  if (pagoSeleccionado.value === "credit") {
+    const num   = document.getElementById("cardNumber")?.value.trim();
+    const venc  = document.getElementById("cardExpiry")?.value.trim();
+    const cvv   = document.getElementById("cardCVV")?.value.trim();
+    const name  = document.getElementById("cardHolder")?.value.trim();
+
+    if (!num || !venc || !cvv || !name) {
+      alert("Completá todos los datos de la tarjeta.");
       return false;
     }
   }
+
+  if (pagoSeleccionado.value === "bank") {
+    const cuenta = document.getElementById("bankAccount")?.value.trim();
+    const banco  = document.getElementById("bankName")?.value.trim();
+    if (!cuenta || !banco) {
+      alert("Ingresá el número de cuenta y el banco.");
+      return false;
+    }
+  }
+
   return true;
 }
