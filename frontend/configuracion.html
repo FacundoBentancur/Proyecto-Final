@@ -6,47 +6,63 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <title>Configuración de Usuario - eMercado</title>
 
+  <!-- Fuentes y estilos -->
   <link href="https://fonts.googleapis.com/css?family=Raleway:300,300i,400,400i,700,700i,900,900i" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
   <link href="css/bootstrap.min.css" rel="stylesheet">
   <link href="css/styles.css" rel="stylesheet">
-  <script src="js/navbar.js"></script>
+
+  <!-- Navbar -->
+  <script src="js/navbar.js" defer></script>
 </head>
 
 <body>
+
+  <!-- NAVBAR -->
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark p-1">
     <div class="container">
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
         <span class="navbar-toggler-icon"></span>
       </button>
+
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav w-100 justify-content-between">
+
           <li class="nav-item">
             <a class="nav-link" href="index.html">Inicio</a>
           </li>
+
           <li class="nav-item">
             <a class="nav-link" href="categories.html">Categorías</a>
           </li>
-          <form class="d-flex" role="search">
-            <input class="form-control me-2" type="search" placeholder="Buscar" aria-label="Search" />
+
+          <!-- Buscador unificado -->
+          <form class="d-flex mx-3" role="search">
+            <input class="form-control me-2" id="searchInput" type="search" placeholder="Buscar" aria-label="Buscar">
             <button class="btn btn-outline-success" type="submit">Buscar</button>
           </form>
+
           <li class="nav-item">
             <a class="nav-link" href="sell.html">Vender</a>
           </li>
         </ul>
-             <div class="dark-mode">
-        <div class="circle">
+
+        <!-- Modo oscuro -->
+        <div class="dark-mode">
+          <div class="circle">
             <ion-icon class="sun" name="sunny"></ion-icon>
             <ion-icon class="moon" name="moon"></ion-icon>
-        </div> 
+          </div>
+        </div>
+
       </div>
     </div>
   </nav>
 
+  <!-- CONTENIDO -->
   <main class="container my-5">
     <h2 class="mb-4">Configuración de Usuario</h2>
+
     <form>
       <div class="mb-3">
         <label for="nombreUsuario" class="form-label">Nombre de Usuario</label>
@@ -67,6 +83,7 @@
     </form>
   </main>
 
+  <!-- FOOTER -->
   <footer class="text-muted mt-5">
     <div class="container">
       <p class="float-end"><a href="#">Volver arriba</a></p>
@@ -74,11 +91,23 @@
     </div>
   </footer>
 
+  <!-- Scripts en ORDEN CORRECTO -->
+
+  <!-- Bootstrap -->
+  <script src="js/bootstrap.bundle.min.js"></script>
+
+  <!-- init.js -->
   <script src="js/init.js"></script>
+
+  <!-- Buscador (faltaba) -->
+  <script src="js/buscador.js"></script>
+
+  <!-- Modo oscuro -->
+  <script src="js/modo_oscuro.js"></script>
+
+  <!-- Iconos -->
   <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
   <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
-  <script src="js/bootstrap.bundle.min.js"></script>
-  <script src="js/modo_oscuro.js"></script>
-</body>
 
+</body>
 </html>

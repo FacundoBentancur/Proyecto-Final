@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <title>eMercado - Categorías</title>
 
+  <!-- CSS -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
   <link href="https://fonts.googleapis.com/css?family=Raleway:300,400,700" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
@@ -13,10 +14,9 @@
   <link href="css/bootstrap.min.css" rel="stylesheet">
   <link href="css/styles.css" rel="stylesheet">
   <link href="css/products.css" rel="stylesheet">
-  <script src="js/navbar.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/js/all.min.js"></script>
-  <script src="js/buscador.js"></script>
 
+  <!-- navbar.js primero -->
+  <script src="js/navbar.js"></script>
 </head>
 
 <body>
@@ -36,27 +36,28 @@
             <a class="nav-link active" href="categories.html">Categorías</a>
           </li>
 
+          <!-- BUSCADOR -->
           <form class="position-relative" role="search" onsubmit="event.preventDefault();">
-            <input id="searchInput" type="search" class="form-control pr-5" placeholder="Buscar productos..." autocomplete="off">
+            <input id="searchInput" type="search" class="form-control pr-5"
+              placeholder="Buscar productos..." autocomplete="off">
             <button id="searchBtn" class="btn btn-link position-absolute" style="top: 0; right: 0; height: 100%;">
               <i class="fas fa-search"></i>
             </button>
-          <ul id="searchResults" class="dropdown-menu w-100 position-absolute"></ul>
+            <ul id="searchResults" class="dropdown-menu w-100 position-absolute"></ul>
           </form>
 
           <li class="nav-item">
             <a class="nav-link" href="sell.html">Vender</a>
           </li>
         </ul>
-         <li>
-            <!-- Boton Modo Oscuro -->
-             <div class="dark-mode">
-        <div class="circle">
+
+        <!-- Botón modo oscuro -->
+        <div class="dark-mode">
+          <div class="circle">
             <ion-icon class="sun" name="sunny"></ion-icon>
             <ion-icon class="moon" name="moon"></ion-icon>
+          </div>
         </div>
-    </div>
-          </li>
       </div>
     </div>
   </nav>
@@ -113,24 +114,38 @@
   <footer class="text-muted mt-4">
     <div class="container">
       <p class="float-end"><a href="#">Volver arriba</a></p>
-      <p class="preLink" >Este sitio forma parte de <a href="https://jovenesaprogramar.edu.uy/" target="_blank">Jovenes a Programar</a></p>
+      <p class="preLink">Este sitio forma parte de 
+        <a href="https://jovenesaprogramar.edu.uy/" target="_blank">Jóvenes a Programar</a>
+      </p>
     </div>
   </footer>
 
   <div id="spinner-wrapper">
     <div class="lds-ring">
-    <div></div>
-    <div></div>
-    <div></div>
-    <div></div>
+      <div></div><div></div><div></div><div></div>
     </div>
   </div>
-  
+
+  <!-- ORDEN CORRECTO DE SCRIPTS -->
+
+  <!-- 1) Rutas y helper fetch -->
   <script src="js/init.js"></script>
-  <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
-  <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
-  <script src="js/bootstrap.bundle.min.js"></script>
+
+  <!-- 2) Buscador (usa init.js) -->
+  <script src="js/buscador.js"></script>
+
+  <!-- 3) Lógica de categorías (usa init.js) -->
   <script src="js/categories.js"></script>
+
+  <!-- 4) Librerías externas -->
+  <script src="js/bootstrap.bundle.min.js"></script>
+  <script type="module"
+    src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+  <script nomodule
+    src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+
+  <!-- 5) Modo oscuro -->
   <script src="js/modo_oscuro.js"></script>
+
 </body>
 </html>
