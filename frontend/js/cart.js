@@ -288,13 +288,15 @@ document.addEventListener("DOMContentLoaded", async () => {
 });
 
 // ---- Añadimos el evento al boton de finalizar compra ----
-document.getElementById("btnFinalizar").addEventListener("click", function (){
-if (validarCompra()){
-  alert("¡Compra exitosa!")
-} else {
-  alert(" Por favor, completá todos los campos requeridos antes de finalizar la compra.")
-}
+document.getElementById("btnFinalizar").addEventListener("click", async () => {
+  if (validarCompra()) {
+    await enviarCarritoAlServidor();
+    alert("¡Compra exitosa!");
+  } else {
+    alert("Por favor complete todos los campos obligatorios antes de finalizar.");
+  }
 });
+
 // ---- Revisamos que cada campo este completo ----
 function validarCompra(){
   const camposDireccion = document.querySelectorAll("#shippingForm .form-control");
@@ -334,4 +336,36 @@ const pagoSeleccionado = document.querySelector('input[name="paymentMethod"]:che
     }
   }
   return true;
+}
+
+async function enviarCarritoAlServidor() {
+  const cart = JSON.parse(localStorage.getItem("cartItems")) || [];
+
+  const payload = {
+    user_id: 1, // por ahora estático
+    items: []
+  };
+
+  for (const item of cart) {
+    const url = `https://japceibal.github.io/emercado-api/products/${item.id}.json`;
+    const res = await fetch(url);
+    const product = await res.json();
+
+    payload.items.push({
+      product_id: product.id,
+      product_name: product.name,
+      unit_cost: product.cost,
+      currency: product.currency,
+      quantity: item.quantity
+    });
+  }
+
+  const resp = await fetch("http://localhost:3000/cart", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload)
+  });
+
+  const data = await resp.json();
+  console.log("📦 Respuesta servidor:", data);
 }
