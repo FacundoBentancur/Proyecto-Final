@@ -1,125 +1,103 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
 
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <title>eMercado - Todo lo que busques está aquí</title>
-
-  <link href="https://fonts.googleapis.com/css?family=Raleway:300,300i,400,400i,700,700i,900,900i" rel="stylesheet">
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="">
+  <title>Login</title>
+  <link rel="icon" type="image/x-icon" href="img/icono_mi_pagina.png">
   <link href="css/bootstrap.min.css" rel="stylesheet">
   <link href="css/styles.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
-  <script src="js/navbar.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/js/all.min.js"></script>
-  <script src="js/buscador.js"></script>
 </head>
 
-<body>
-  <nav class="navbar navbar-expand-lg navbar-dark bg-dark p-1">
-    <div class="container">
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav w-100 justify-content-between">
-          <li class="nav-item">
-            <a class="nav-link active" href="index.html">Inicio</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="categories.html">Categorías</a>
-          </li>
+<body class="bg-light login-page">
 
-           <form class="position-relative" role="search" onsubmit="event.preventDefault();">
-            <input id="searchInput" type="search" class="form-control pr-5" placeholder="Buscar productos..." autocomplete="off">
-            <button id="searchBtn" class="btn btn-link position-absolute" style="top: 0; right: 0; height: 100%;">
-              <i class="fas fa-search"></i>
-            </button>
-          <ul id="searchResults" class="dropdown-menu w-100 position-absolute"></ul>
-          </form>
-          
-          <li class="nav-item">
-            <a class="nav-link" href="sell.html">Vender</a>
-          </li>
-        </ul>
-          <li>
-            <!-- Boton Modo Oscuro -->
-             <div class="dark-mode">
-        <div class="circle">
-            <ion-icon class="sun" name="sunny"></ion-icon>
-            <ion-icon class="moon" name="moon"></ion-icon>
-        </div>
-    </div>
-          </li>
-      </div>
-    </div>
-  </nav>
+  <div id="contenedorLogin" class="container d-flex justify-content-center align-items-center">
+    <!-- Se centra vertical y horizontalmente en la pantalla -->
 
-  <main>
-    <div class="jumbotron text-center"></div>
-    <div class="album py-5 bg-light">
-      <div class="container">
-        <div class="row">
-          <div class="col-md-4">
-            <!-- Cada categoria posible tiene su id unica, siendo así qué products.js pueda mostrar la información de la id solicitada -->
-            <a href="products.html?cat=101" class="card mb-4 shadow-sm custom-card cursor-active text-decoration-none text-dark">
-              <img class="bd-placeholder-img card-img-top" src="img/cars_index.jpg"
-                alt="Imagen representativa de la categoría 'Autos'">
-              <h3 class="m-3">Autos</h3>
-              <div class="card-body">
-                <p class="card-text">Los mejores precios en autos 0 kilómetro, de alta y media gama.</p>
-              </div>
-            </a>
+    <main class="col-md-6">
+      <div class="row mt-4">
+        <div class="col text-center">
+          <!-- Logo -->
+          <h1 class="mb-3">
+            <img src="img/logo_mi_tienda.png" alt="Logo de mi tienda" class="img-fluid" style="max-height:200px;">
+          </h1>
+          <hr class="my-4">
+
+          <!-- Campo Usuario -->
+          <div class="row g-3 justify-content-center">
+            <div class="col-sm-8">
+              <label for="usuario" class="form-label">Usuario</label>
+              <input type="text" class="form-control" id="usuario">
+            </div>
           </div>
 
-          <div class="col-md-4">
-            <a href="products.html?cat=102" class="card mb-4 shadow-sm custom-card cursor-active text-decoration-none text-dark">
-              <img class="bd-placeholder-img card-img-top" src="img/toys_index.jpg"
-                alt="Imagen representativa de la categoría 'Juguetes'">
-              <h3 class="m-3">Juguetes</h3>
-              <div class="card-body">
-                <p class="card-text">Encuentra aquí los mejores precios para niños/as de cualquier edad.</p>
-              </div>
-            </a>
-          </div>
+          <!-- Campo Contraseña + Requisitos -->
+          <div class="row g-4 justify-content-center">
+            <div class="col-sm-8">
+              <label for="password" class="form-label">Contraseña</label>
 
-          <div class="col-md-4">
-            <a href="products.html?cat=103" class="card mb-4 shadow-sm custom-card cursor-active text-decoration-none text-dark">
-              <img class="bd-placeholder-img card-img-top" src="img/furniture_index.jpg"
-                alt="Imagen representativa de la categoría 'Muebles'">
-              <h3 class="m-3">Muebles</h3>
-              <div class="card-body">
-                <p class="card-text">Muebles antiguos, nuevos y para ser armados por uno mismo.</p>
+              <div class="input-group">
+                <input type="password" class="form-control" id="password" aria-describedby="pwHelp">
+                <button class="btn btn-outline-secondary" type="button" id="togglePassword"
+                  aria-label="Mostrar u ocultar contraseña" aria-pressed="false">👁</button>
               </div>
-            </a>
-          </div>
-        </div>
 
-        <div class="row">
-          <a class="btn btn-light btn-lg btn-block" href="categories.html">Y mucho más!</a>
+              <!-- Texto de requisitos en tamaño más pequeño -->
+              <div id="pwHelp" class="form-text text-start mt-1 small">
+                La contraseña debe incluir:
+                <ul class="mb-0 ps-4 small">
+                  <li id="reqUpper" class="text-muted">Al menos <strong>una mayúscula</strong></li>
+                  <li id="reqNumber" class="text-muted">Al menos <strong>un número</strong></li>
+                  <li id="reqSpecial" class="text-muted">Al menos <strong>un caracter especial</strong> (ej.: ! @ # $ % & * . , - _)</li>
+                </ul>
+              </div>
+            </div>
+
+            <!-- Checkbox términos -->
+            <div class="form-check col-sm-8">
+              <div class="form-check">
+                <input type="checkbox" class="form-check-input" id="terminos">
+                <label class="form-check-label" for="terminos">Acepto los términos y condiciones del servicio.</label>
+              </div>
+            </div>
+
+            <!-- Botón ingresar -->
+            <div class="col-sm-8">
+              <button class="btn btn-primary" type="button" id="ingBtn">Ingresar</button>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
-  </main>
+    </main>
+  </div>
 
-  <footer class="text-muted">
-    <div class="container">
-      <p class="float-end">
-        <a class="volverArriba" href="#">Volver arriba</a>
-      </p>
-      <p class="preLink">Este sitio forma parte de <a href="https://jovenesaprogramar.edu.uy/" target="_blank">Jovenes a Programar</a></p>
-    </div>
+  <!-- Footer -->
+  <footer class="my-5 pt-5 text-muted text-center text-small">
+    <p class="mb-1">Este sitio forma parte de <a href="https://jovenesaprogramar.edu.uy/" target="_blank">Jovenes a
+        Programar</a></p>
+    <p class="mb-1">Es un sitio generado con fines estrictamente educativos. No realiza registros ni guarda datos de
+      ningún tipo.</p>
   </footer>
 
-  <script src="js/init.js"></script>
-  <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
-  <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
-  <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+  <!-- Alertas -->
+  <div class="alert alert-success alert-dismissible fade" role="alert" id="alert-success">
+    <p>Datos guardados correctamente</p>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+
+  <div class="alert alert-danger alert-dismissible fade" role="alert" id="alert-danger">
+    <p>Los datos ingresados no cumplen con los requisitos solicitados</p>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+
+  <!-- Scripts -->
+   <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
   <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
   <script src="js/bootstrap.bundle.min.js"></script>
-  <script src="js/index.js"></script>
+  <script src="js/login.js"></script>
   <script src="js/modo_oscuro.js"></script>
 </body>
 
