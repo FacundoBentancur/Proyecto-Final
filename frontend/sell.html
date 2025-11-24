@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>eMercado - Vender</title>
+
+  <!-- CSS -->
+  <link href="https://fonts.googleapis.com/css?family=Raleway:300,300i,400,400i,700,700i,900,900i" rel="stylesheet">
+  <link href="css/bootstrap.min.css" rel="stylesheet">
+  <link href="css/dropzone.css" rel="stylesheet">
+  <link href="css/styles.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+
+  <!-- navbar.js primero -->
+  <script src="js/navbar.js"></script>
+</head>
+
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark p-1">
+    <div class="container">
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav w-100 justify-content-between">
+
+          <li class="nav-item">
+            <a class="nav-link" href="index.html">Inicio</a>
+          </li>
+
+          <li class="nav-item">
+            <a class="nav-link" href="categories.html">Categorías</a>
+          </li>
+
+          <!-- BUSCADOR -->
+          <form class="position-relative d-none d-md-block" onsubmit="event.preventDefault();">
+            <input id="searchInput" type="search" class="form-control pr-5"
+              placeholder="Buscar productos..." autocomplete="off">
+            <button id="searchBtn" class="btn btn-link position-absolute"
+              style="top: 0; right: 0; height: 100%;">
+              <i class="fas fa-search"></i>
+            </button>
+            <ul id="searchResults" class="dropdown-menu w-100 position-absolute"></ul>
+          </form>
+
+          <li class="nav-item">
+            <a class="nav-link active" href="sell.html">Vender</a>
+          </li>
+
+        </ul>
+
+        <!-- Modo oscuro -->
+        <div class="dark-mode ms-3">
+          <div class="circle">
+            <ion-icon class="sun" name="sunny"></ion-icon>
+            <ion-icon class="moon" name="moon"></ion-icon>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </nav>
+
+  <div class="container">
+    <div class="text-center p-4">
+      <h2>Vender</h2>
+      <p class="lead">Ingresa los datos del artículo a vender.</p>
+    </div>
+
+    <div class="row justify-content-md-center">
+      <div class="col-md-8 order-md-1">
+
+        <h4 class="mb-3">Información del producto</h4>
+
+        <form class="needs-validation" id="sell-info">
+
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="productName">Nombre</label>
+              <input type="text" class="form-control" id="productName" name="productName">
+              <div class="invalid-feedback">Ingresa un nombre</div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-8">
+              <label>Imágenes</label>
+              <div class="needsclick dz-clickable" id="file-upload">
+                <div class="dz-message needsclick">Arrastra tus fotos aquí<br></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-12 mb-3">
+              <label for="productDescription">Descripción</label>
+              <textarea name="productDescription" class="form-control" id="productDescription"></textarea>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-3 mb-3">
+              <label for="productCostInput">Costo</label>
+              <input type="number" name="productCostInput" class="form-control"
+                id="productCostInput" min="0" value="0">
+              <div class="invalid-feedback">El costo debe ser mayor que 0.</div>
+            </div>
+
+            <div class="col-md-4 mb-3">
+              <label for="productCurrency">Moneda</label>
+              <select name="productCurrency" id="productCurrency"
+                class="form-select" required>
+                <option value="" hidden selected>Seleccionar moneda</option>
+                <option>Pesos Uruguayos (UYU)</option>
+                <option>Dólares (USD)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-7 mb-3">
+              <label for="productCategory">Categoría</label>
+              <select name="productCategory" class="form-select" id="productCategory">
+                <option value="">Elija la categoría...</option>
+                <option>Autos</option>
+                <option>Juguetes</option>
+                <option>Muebles</option>
+                <option>Herramientas</option>
+                <option>Computadoras</option>
+                <option>Vestimenta</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-3 mb-3">
+              <label for="productCountInput">Cantidad en stock</label>
+              <input type="number" class="form-control" id="productCountInput"
+                min="0" value="1">
+            </div>
+          </div>
+
+          <hr class="mb-4">
+
+          <h5 class="mb-3">Tipo de publicación</h5>
+
+          <div class="d-block my-3">
+            <div>
+              <input id="goldradio" name="publicationType" type="radio" checked>
+              <label for="goldradio">Gold (13%)</label>
+            </div>
+
+            <div>
+              <input id="premiumradio" name="publicationType" type="radio">
+              <label for="premiumradio">Premium (7%)</label>
+            </div>
+
+            <div>
+              <input id="standardradio" name="publicationType" type="radio">
+              <label for="standardradio">Estándar (3%)</label>
+            </div>
+
+            <button type="button" class="m-1 btn btn-link" data-bs-toggle="modal"
+              data-bs-target="#contidionsModal">
+              Ver condiciones
+            </button>
+          </div>
+
+          <hr class="mb-4">
+
+          <h4 class="mb-3">Costos</h4>
+
+          <ul class="list-group mb-3">
+            <li class="list-group-item d-flex justify-content-between">
+              <div>
+                <h6 class="my-0">Precio</h6>
+                <small class="text-muted">Unitario del producto</small>
+              </div>
+              <span id="productCostText">-</span>
+            </li>
+
+            <li class="list-group-item d-flex justify-content-between">
+              <div>
+                <h6 class="my-0">Porcentaje</h6>
+                <small class="text-muted">Según tipo de publicación</small>
+              </div>
+              <span id="comissionText">-</span>
+            </li>
+
+            <li class="list-group-item d-flex justify-content-between">
+              <span>Total ($)</span>
+              <strong id="totalCostText">-</strong>
+            </li>
+          </ul>
+
+          <button class="btn btn-primary btn-lg" type="submit">Vender</button>
+
+        </form>
+
+      </div>
+    </div>
+  </div>
+
+  <footer class="text-muted">
+    <div class="container">
+      <p class="float-end"><a href="#">Volver arriba</a></p>
+      <p class="preLink">
+        Este sitio forma parte de 
+        <a href="https://jovenesaprogramar.edu.uy/" target="_blank">Jóvenes a Programar</a>
+      </p>
+    </div>
+  </footer>
+
+  <div id="spinner-wrapper">
+    <div class="lds-ring"><div></div><div></div><div></div><div></div></div>
+  </div>
+
+  <!-- ORDEN CORRECTO DE SCRIPTS -->
+
+  <!-- 1) init.js -->
+  <script src="js/init.js"></script>
+
+  <!-- 2) buscador.js -->
+  <script src="js/buscador.js"></script>
+
+  <!-- 3) dropzone -->
+  <script src="js/dropzone.js"></script>
+
+  <!-- 4) lógica de venta -->
+  <script src="js/sell.js"></script>
+
+  <!-- 5) librerías externas -->
+  <script src="js/bootstrap.bundle.min.js"></script>
+  <script type="module"
+    src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+  <script nomodule
+    src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+
+  <!-- 6) modo oscuro -->
+  <script src="js/modo_oscuro.js"></script>
+
+</body>
+</html>
