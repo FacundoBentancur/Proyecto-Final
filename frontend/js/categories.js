@@ -8,7 +8,8 @@ let estado = {
 
 // ---------- Utilidades ----------
 const $ = (sel) => document.querySelector(sel);
-const isMobilePanel = () => window.matchMedia("(max-width: 575.98px)").matches;
+const isMobilePanel = () =>
+  window.matchMedia("(max-width: 575.98px)").matches;
 
 function normalizarNumero(val) {
   if (val === "" || val === null || typeof val === "undefined") return null;
@@ -109,11 +110,11 @@ function cerrarPanelSiMovil() {
 // ---------- Inicialización ----------
 async function cargarCategorias() {
   try {
-    const url = "https://japceibal.github.io/emercado-api/cats/cat.json";
-    const res = await fetch(url);
-    if (!res.ok) throw new Error("Error cargando categorías");
-    const data = await res.json();
+    // AHORA usamos la constante global CATEGORIES_URL + getJSONData
+    const res = await getJSONData(CATEGORIES_URL);
+    if (res.status !== "ok") throw new Error(res.data || "Error cargando categorías");
 
+    const data = res.data;
     categoriasOriginal = Array.isArray(data) ? data : [];
     aplicarYRender();
     inicializarUI();
@@ -199,10 +200,19 @@ function inicializarUI() {
 }
 
 function actualizarBotonesOrden() {
+  const map = {
+    AZ: "#ordAZ",
+    ZA: "#ordZA",
+    CANT: "#ordCant",
+  };
+
   ["#ordAZ", "#ordZA", "#ordCant"].forEach((sel) =>
     $(sel)?.classList.remove("active")
   );
-  if (estado.orden) $(map[estado.orden])?.classList.add("active");
+
+  if (estado.orden && map[estado.orden]) {
+    $(map[estado.orden])?.classList.add("active");
+  }
 }
 
 cargarCategorias();

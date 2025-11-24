@@ -1,5 +1,5 @@
-const API_BASE = "https://japceibal.github.io/emercado-api/cats_products/";
-const CATEGORIES_URL = "https://japceibal.github.io/emercado-api/cats/cat.json";
+// OJO: ahora usamos las constantes globales de init.js:
+// CATEGORIES_URL, PRODUCTS_URL, EXT_TYPE
 
 let todosLosProductos = [];
 let searchInput, searchBtn, searchResults;
@@ -7,18 +7,23 @@ let searchInput, searchBtn, searchResults;
 // ========== Cargar todos los productos ==========
 async function cargarTodosLosProductos() {
   try {
-    const res = await fetch(CATEGORIES_URL);
-    const categorias = await res.json();
+    // Primero traemos las categorías desde el JSON local
+    const resCats = await getJSONData(CATEGORIES_URL);
+    if (resCats.status !== "ok") throw new Error(resCats.data || "Error cargando categorías");
+    const categorias = resCats.data || [];
 
+    // Para cada categoría, pedimos su archivo de cats_products correspondiente
     const promises = categorias.map(cat =>
-      fetch(API_BASE + cat.id + ".json").then(r => r.json())
+      getJSONData(`${PRODUCTS_URL}${cat.id}${EXT_TYPE}`).then(r => (r.status === "ok" ? r.data : null))
     );
 
     const dataCategorias = await Promise.all(promises);
 
-    todosLosProductos = dataCategorias.flatMap(c => 
-      (c.products || []).map(p => ({ ...p, catName: c.catName }))
-    );
+    todosLosProductos = dataCategorias
+      .filter(c => c && Array.isArray(c.products))
+      .flatMap(c =>
+        c.products.map(p => ({ ...p, catName: c.catName }))
+      );
   } catch (e) {
     console.error("Error cargando productos para buscador:", e);
   }
@@ -29,11 +34,13 @@ function buscarProductos(query) {
   const q = query.trim().toLowerCase();
   if (!q) return [];
 
-  return todosLosProductos.filter(p => {
-    const n = (p.name || "").toLowerCase();
-    const d = (p.description || "").toLowerCase();
-    return n.includes(q) || d.includes(q);
-  }).slice(0, 10); // máximo 10 resultados
+  return todosLosProductos
+    .filter(p => {
+      const n = (p.name || "").toLowerCase();
+      const d = (p.description || "").toLowerCase();
+      return n.includes(q) || d.includes(q);
+    })
+    .slice(0, 10); // máximo 10 resultados
 }
 
 // ========== Mostrar resultados ==========
@@ -98,8 +105,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   // Guardar productID en localStorage
   searchResults.addEventListener("click", (e) => {
-    if (e.target.closest("a")) {
-      const a = e.target.closest("a");
+    const a = e.target.closest("a");
+    if (a) {
       const id = a.getAttribute("data-id");
       if (id) localStorage.setItem("productID", id);
       searchResults.classList.remove("show");

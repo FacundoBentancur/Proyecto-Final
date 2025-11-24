@@ -136,7 +136,7 @@ function cerrarPanelSiMovil() {
   if (isMobilePanel()) cerrarPanel();
 }
 
-// ---------- Carga remota de productos ----------
+// ---------- Carga de productos usando JSON local ----------
 async function cargarProductos() {
   try {
     const params = new URLSearchParams(location.search);
@@ -150,11 +150,11 @@ async function cargarProductos() {
       return;
     }
 
-    const url = `https://japceibal.github.io/emercado-api/cats_products/${catID}.json`;
-    const response = await fetch(url);
-    if (!response.ok) throw new Error("No se pudo obtener la categoría con el ID " + catID);
+    const url = `${PRODUCTS_URL}${catID}${EXT_TYPE}`;
+    const res = await getJSONData(url);
+    if (res.status !== "ok") throw new Error(res.data || "Error al obtener la categoría");
 
-    const data = await response.json();
+    const data = res.data;
 
     $("#categoria").textContent = `CATÁLOGO DE PRODUCTOS - ${data.catName}`;
     productosOriginal = Array.isArray(data.products) ? data.products : [];

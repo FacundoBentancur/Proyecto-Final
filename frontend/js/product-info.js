@@ -11,16 +11,25 @@ document.addEventListener("DOMContentLoaded", async function () {
       return;
     }
 
-    // URL del producto
-    const urlProduct = `https://japceibal.github.io/emercado-api/products/${productID}.json`;
-    const response = await fetch(urlProduct);
-    if (!response.ok) throw new Error("No se pudo obtener el producto con ID " + productID);
-    const product = await response.json();
+    // ====== PRODUCTO (JSON local vía getJSONData) ======
+    const urlProduct = `${PRODUCT_INFO_URL}${productID}${EXT_TYPE}`;
+    const resProd = await getJSONData(urlProduct);
+    if (resProd.status !== "ok") {
+      throw new Error("No se pudo obtener el producto con ID " + productID);
+    }
+    const product = resProd.data;
 
-    // URL de los comentarios
-    const urlComments = `https://japceibal.github.io/emercado-api/products_comments/${productID}.json`;
-    const responseComments = await fetch(urlComments);
-    const apiComments = await responseComments.json();
+    // ====== COMENTARIOS (JSON local) ======
+    let apiComments = [];
+    try {
+      const urlComments = `${PRODUCT_INFO_COMMENTS_URL}${productID}${EXT_TYPE}`;
+      const resComments = await getJSONData(urlComments);
+      if (resComments.status === "ok" && Array.isArray(resComments.data)) {
+        apiComments = resComments.data;
+      }
+    } catch (err) {
+      console.warn("No se pudieron cargar comentarios del producto:", err);
+    }
 
     // Generar el carrusel de imágenes del producto
     const carouselItems = (product.images || [])
@@ -203,74 +212,73 @@ document.addEventListener("DOMContentLoaded", async function () {
     };
 
     // ====== Productos relacionados (Grid desktop + Carrusel mobile) ======
-    let relatedItems = Array.isArray(product.relatedProducts) ? [...product.relatedProducts] : [];
+    let relatedItems = Array.isArray(product.relatedProducts)
+      ? [...product.relatedProducts]
+      : [];
 
-// ===== BOTÓN DOBLE (COMPRAR + AGREGAR) =====
-const dualButtonsHTML = `
-  <div class="dual-button-container my-4">
+    // ===== BOTÓN DOBLE (COMPRAR + AGREGAR) =====
+    const dualButtonsHTML = `
+      <div class="dual-button-container my-4">
 
-    <button id="button_buy" type="button" class="dual-btn left-btn">
-      Comprar ahora
-    </button>
+        <button id="button_buy" type="button" class="dual-btn left-btn">
+          Comprar ahora
+        </button>
 
-    <button id="button_add_cart" type="button" class="dual-btn right-btn" title="Añadir al carrito">
-      <span class="add-cart-icon">🛒</span> +
-    </button>
+        <button id="button_add_cart" type="button" class="dual-btn right-btn" title="Añadir al carrito">
+          <span class="add-cart-icon">🛒</span> +
+        </button>
 
-  </div>
-`;
+      </div>
+    `;
 
-container.insertAdjacentHTML("beforeend", dualButtonsHTML);
+    container.insertAdjacentHTML("beforeend", dualButtonsHTML);
 
+    // ===== LÓGICA DEL BOTÓN COMPRAR =====
+    document.getElementById("button_buy")?.addEventListener("click", () => {
+      const id = product.id;
+      const carrito = JSON.parse(localStorage.getItem("cartItems")) || [];
 
-// ===== LÓGICA DEL BOTÓN COMPRAR =====
-document.getElementById("button_buy")?.addEventListener("click", () => {
-  const id = product.id;
-  const carrito = JSON.parse(localStorage.getItem("cartItems")) || [];
+      let existe = carrito.find(item => item.id === id);
+      if (existe) {
+        existe.quantity += 1;
+      } else {
+        carrito.push({ id: id, quantity: 1 });
+      }
 
-  let existe = carrito.find(item => item.id === id);
-  if (existe) {
-    existe.quantity += 1;
-  } else {
-    carrito.push({ id: id, quantity: 1 });
-  }
+      localStorage.setItem("cartItems", JSON.stringify(carrito));
+      updateCartCount();
+      window.location.href = "cart.html";
+    });
 
-  localStorage.setItem("cartItems", JSON.stringify(carrito));
-  updateCartCount();
-  window.location.href = "cart.html";
-});
+    // ===== LÓGICA DEL BOTÓN AGREGAR AL CARRITO =====
+    const addToCart = document.getElementById("button_add_cart");
 
+    if (addToCart) {
+      addToCart.addEventListener("click", () => {
+        const id = product.id;
+        const carrito = JSON.parse(localStorage.getItem("cartItems")) || [];
 
-// ===== LÓGICA DEL BOTÓN AGREGAR AL CARRITO =====
-const addToCart = document.getElementById("button_add_cart");
+        let existe = carrito.find(item => item.id === id);
+        if (existe) {
+          existe.quantity += 1;
+        } else {
+          carrito.push({ id: id, quantity: 1 });
+        }
 
-if (addToCart) {
-  addToCart.addEventListener("click", () => {
-    const id = product.id;
-    const carrito = JSON.parse(localStorage.getItem("cartItems")) || [];
+        localStorage.setItem("cartItems", JSON.stringify(carrito));
+        updateCartCount();
+        window.dispatchEvent(new Event("carrito:actualizado"));
 
-    let existe = carrito.find(item => item.id === id);
-    if (existe) {
-      existe.quantity += 1;
-    } else {
-      carrito.push({ id: id, quantity: 1 });
+        // Animación feedback
+        addToCart.innerHTML = `<span class="cart-icon">✔️</span> Listo!`;
+        addToCart.disabled = true;
+
+        setTimeout(() => {
+          addToCart.innerHTML = `<span class="cart-icon">🛒</span> +`;
+          addToCart.disabled = false;
+        }, 1200);
+      });
     }
-
-    localStorage.setItem("cartItems", JSON.stringify(carrito));
-    updateCartCount();
-    window.dispatchEvent(new Event("carrito:actualizado"));
-
-    // Animación feedback
-    addToCart.innerHTML = `<span class="cart-icon">✔️</span> Listo!`;
-    addToCart.disabled = true;
-
-    setTimeout(() => {
-      addToCart.innerHTML = `<span class="cart-icon">🛒</span> +`;
-      addToCart.disabled = false;
-    }, 1200);
-  });
-}
-
 
     const relatedHTML = `
       <div class="related-products mt-5">
@@ -382,25 +390,27 @@ if (addToCart) {
     renderRelatedGrid();
     renderRelatedCarrusel();
 
-    // ====== Más productos de la misma categoría ======
+    // ====== Más productos de la misma categoría (JSON local) ======
     try {
-      const urlCategoria = `https://japceibal.github.io/emercado-api/cats_products/${product.catID}.json`;
-      const responseCat = await fetch(urlCategoria);
-      const dataCat = await responseCat.json();
+      const urlCategoria = `${PRODUCTS_URL}${product.catID}${EXT_TYPE}`;
+      const resCat = await getJSONData(urlCategoria);
+      if (resCat.status === "ok" && resCat.data && Array.isArray(resCat.data.products)) {
+        const dataCat = resCat.data;
 
-      // Filtrar: excluir el actual y los que ya están en relatedItems
-      const yaRelacionados = new Set(relatedItems.map(r => r.id));
-      const extras = dataCat.products
-        .filter(p => p.id != product.id && !yaRelacionados.has(p.id))
-        .slice(0, 3); // mostrar solo 3 extra
+        // Filtrar: excluir el actual y los que ya están en relatedItems
+        const yaRelacionados = new Set(relatedItems.map(r => r.id));
+        const extras = dataCat.products
+          .filter(p => p.id != product.id && !yaRelacionados.has(p.id))
+          .slice(0, 3); // mostrar solo 3 extra
 
-      if (extras.length > 0) {
-        // Agregar a la fuente única
-        relatedItems = [...relatedItems, ...extras];
+        if (extras.length > 0) {
+          // Agregar a la fuente única
+          relatedItems = [...relatedItems, ...extras];
 
-        // Re-render de grid y carrusel para reflejar los extras
-        renderRelatedGrid();
-        renderRelatedCarrusel();
+          // Re-render de grid y carrusel para reflejar los extras
+          renderRelatedGrid();
+          renderRelatedCarrusel();
+        }
       }
     } catch (err) {
       console.warn("No se pudieron cargar productos extra de la categoría:", err);
