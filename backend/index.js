@@ -2,23 +2,33 @@ const express = require("express");
 const cors = require("cors");
 const path = require("path");
 const mysql = require("mysql2/promise");
+const auth = require("./middlewares/auth");   // ⬅️ Middleware agregado
 
 const app = express();
 app.use(cors());
-app.use(express.json()); // ← Necesario para recibir JSON
+app.use(express.json());
 
 // --- Conexión a la base de datos ---
 const db = mysql.createPool({
   host: "localhost",
   user: "root",
-  password: "",      // tu pass
+  password: "",
   database: "ecommerce"
 });
 
-// Servir datos estáticos
+// --- Rutas públicas (sin token) ---
+
+// Servir JSON desde /frontend/data
 app.use("/data", express.static(path.join(__dirname, "../frontend/data")));
 
-// --- ENDPOINT POST /cart ---
+
+// ==========================================================
+// TODAS LAS RUTAS A PARTIR DE ACA REQUIEREN TOKEN
+// ==========================================================
+app.use(auth);
+
+
+// --- ENDPOINT POST /cart (protegido) ---
 app.post("/cart", async (req, res) => {
   try {
     const { user_id, items } = req.body;
@@ -27,7 +37,7 @@ app.post("/cart", async (req, res) => {
       return res.status(400).json({ error: "Datos incompletos" });
     }
 
-    // Crear un nuevo carrito
+    // Nuevo carrito
     const [cartResult] = await db.query(
       "INSERT INTO carts (user_id) VALUES (?)",
       [user_id]
@@ -35,7 +45,6 @@ app.post("/cart", async (req, res) => {
 
     const cartId = cartResult.insertId;
 
-    // Insertar ítems
     const values = items.map(i => [
       cartId,
       i.product_id,
