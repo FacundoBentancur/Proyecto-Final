@@ -1,95 +1,154 @@
-function showAlertSuccess() {
-  const alert = document.getElementById("alert-success");
-  alert.classList.add("show");
-  alert.querySelector("p").textContent = "Datos correctos. Redirigiendo...";
-}
+document.addEventListener("DOMContentLoaded", () => {
 
-function showAlertError(msg) {
-  const alert = document.getElementById("alert-danger");
-  alert.classList.add("show");
-  alert.querySelector("p").textContent = msg;
-}
+  // ====================================
+  // ALERTAS (NO BOOTSTRAP)
+  // ====================================
+  function showAlertSuccess(msg) {
+    const ok = document.getElementById("alert-success");
+    const err = document.getElementById("alert-danger");
 
-// --- Validación de contraseña ---
-function passwordMissingParts(pw) {
-  const missing = [];
+    err.classList.add("d-none");
 
-  const hasUpper = /[A-ZÑÁÉÍÓÚ]/.test(pw);
-  const hasNumber = /\d/.test(pw);
-  const hasSpecial = /[^A-Za-z0-9]/.test(pw);
+    ok.querySelector("p").textContent = msg;
+    ok.classList.remove("d-none");
+  }
 
-  if (!hasUpper) missing.push("una mayúscula");
-  if (!hasNumber) missing.push("un número");
-  if (!hasSpecial) missing.push("un caracter especial");
+  function showAlertError(msg) {
+    const ok = document.getElementById("alert-success");
+    const err = document.getElementById("alert-danger");
 
-  return { hasUpper, hasNumber, hasSpecial, missing };
-}
+    ok.classList.add("d-none");
 
-function updatePasswordHints(pw) {
-  const { hasUpper, hasNumber, hasSpecial } = passwordMissingParts(pw);
+    err.querySelector("p").textContent = msg;
+    err.classList.remove("d-none");
+  }
 
-  const mark = (el, ok) => {
-    el.classList.toggle("text-success", ok);
-    el.classList.toggle("text-muted", !ok);
-    el.classList.toggle("fw-semibold", ok);
-  };
 
-  mark(document.getElementById("reqUpper"), hasUpper);
-  mark(document.getElementById("reqNumber"), hasNumber);
-  mark(document.getElementById("reqSpecial"), hasSpecial);
-}
+  // ====================================
+  // VALIDACIÓN CONTRASEÑA
+  // ====================================
+  function passwordMissingParts(pw) {
+    const missing = [];
 
-document.getElementById("password").addEventListener("input", (e) => {
-  updatePasswordHints(e.target.value);
+    const hasUpper = /[A-ZÑÁÉÍÓÚ]/.test(pw);
+    const hasNumber = /\d/.test(pw);
+    const hasSpecial = /[^A-Za-z0-9]/.test(pw);
+
+    if (!hasUpper) missing.push("una mayúscula");
+    if (!hasNumber) missing.push("un número");
+    if (!hasSpecial) missing.push("un caracter especial");
+
+    return { hasUpper, hasNumber, hasSpecial, missing };
+  }
+
+  function updatePasswordHints(pw) {
+    const { hasUpper, hasNumber, hasSpecial } = passwordMissingParts(pw);
+
+    const mark = (el, ok) => {
+      el.classList.toggle("text-success", ok);
+      el.classList.toggle("text-muted", !ok);
+      el.classList.toggle("fw-semibold", ok);
+    };
+
+    mark(document.getElementById("reqUpper"), hasUpper);
+    mark(document.getElementById("reqNumber"), hasNumber);
+    mark(document.getElementById("reqSpecial"), hasSpecial);
+  }
+
+  document.getElementById("password").addEventListener("input", (e) => {
+    updatePasswordHints(e.target.value);
+  });
+
+
+  // ====================================
+  // MOSTRAR / OCULTAR CONTRASEÑA
+  // ====================================
+  const toggleBtn = document.getElementById("togglePassword");
+  toggleBtn.addEventListener("click", () => {
+    const input = document.getElementById("password");
+    input.type = input.type === "password" ? "text" : "password";
+  });
+
+
+  // ====================================
+  // LOGIN
+  // ====================================
+  document.getElementById("ingBtn").addEventListener("click", async () => {
+    const usuario = document.getElementById("usuario").value.trim();
+    const password = document.getElementById("password").value.trim();
+    const terminos = document.getElementById("terminos").checked;
+
+    if (!usuario) return showAlertError("El campo Usuario es obligatorio.");
+    if (!password) return showAlertError("El campo Contraseña es obligatorio.");
+    if (!terminos) return showAlertError("Debe aceptar los términos y condiciones.");
+
+    const { missing } = passwordMissingParts(password);
+    if (missing.length > 0) {
+      const listado = missing.join(", ").replace(/, ([^,]*)$/, " y $1");
+      return showAlertError(`La contraseña no cumple los requisitos: falta ${listado}.`);
+    }
+
+    try {
+      const res = await fetch("http://localhost:3000/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ usuario, password })
+      });
+
+      const data = await res.json();
+      if (!res.ok) return showAlertError(data.error || "Credenciales incorrectas.");
+
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("usuario", data.usuario);
+      localStorage.setItem("loggedIn", "true");
+
+      showAlertSuccess("Inicio de sesión exitoso. Redirigiendo...");
+
+      setTimeout(() => window.location.href = "index.html", 3000);
+
+    } catch (err) {
+      showAlertError("Error de conexión con el servidor.");
+    }
+  });
+
+
+  // ====================================
+  // REGISTRO
+  // ====================================
+  document.getElementById("regBtn").addEventListener("click", async () => {
+    const usuario = document.getElementById("usuario").value.trim();
+    const password = document.getElementById("password").value.trim();
+
+    if (!usuario) return showAlertError("Debe ingresar un nombre de usuario.");
+    if (!password) return showAlertError("Debe ingresar una contraseña.");
+
+    const { missing } = passwordMissingParts(password);
+    if (missing.length > 0) {
+      const listado = missing.join(", ").replace(/, ([^,]*)$/, " y $1");
+      return showAlertError(`La contraseña no cumple los requisitos: falta ${listado}.`);
+    }
+
+    try {
+      const res = await fetch("http://localhost:3000/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ usuario, password })
+      });
+
+      const data = await res.json();
+      if (!res.ok) return showAlertError(data.error || "No se pudo registrar.");
+
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("usuario", data.usuario);
+      localStorage.setItem("loggedIn", "true");
+
+      showAlertSuccess("Registrado correctamente. Redirigiendo...");
+
+      setTimeout(() => window.location.href = "index.html", 3000);
+
+    } catch (err) {
+      showAlertError("Error de conexión con el servidor.");
+    }
+  });
+
 });
-
-// --- Mostrar / ocultar contraseña ---
-document.getElementById("togglePassword").addEventListener("click", () => {
-  const input = document.getElementById("password");
-  const isHidden = input.type === "password";
-  input.type = isHidden ? "text" : "password";
-  // Accesibilidad
-  const btn = document.getElementById("togglePassword");
-  btn.setAttribute("aria-pressed", String(isHidden));
-});
-
-// --- Flujo de login ---
-document.getElementById("ingBtn").addEventListener("click", function () {
-  const usuario = document.getElementById("usuario").value.trim();
-  const password = document.getElementById("password").value.trim();
-  const terminos = document.getElementById("terminos").checked;
-
-  if (usuario === "") {
-    showAlertError("El campo Usuario es obligatorio.");
-    return;
-  }
-
-  if (password === "") {
-    showAlertError("El campo Contraseña es obligatorio.");
-    return;
-  }
-
-  const { missing } = passwordMissingParts(password);
-  if (missing.length > 0) {
-    // Mensaje detallado de qué faltó
-    const listado = missing.join(", ").replace(/, ([^,]*)$/, " y $1");
-    showAlertError(`La contraseña no cumple con los requisitos: falta ${listado}.`);
-    return;
-  }
-
-  if (!terminos) {
-    showAlertError("Debe aceptar los términos y condiciones.");
-    return;
-  }
-
-  // Guardar login en localStorage
-  localStorage.setItem("loggedIn", "true");
-  localStorage.setItem("usuario", usuario);
-
-  showAlertSuccess();
-
-  setTimeout(() => {
-    window.location.href = "index.html";
-  }, 1500);
-});
-

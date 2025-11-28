@@ -17,7 +17,6 @@
 <body class="bg-light login-page">
 
   <div id="contenedorLogin" class="container d-flex justify-content-center align-items-center">
-
     <main class="col-md-6">
       <div class="row mt-4">
         <div class="col text-center">
@@ -65,15 +64,18 @@
             </div>
 
             <!-- Botón ingresar -->
-            <div class="col-sm-8">
-              <button class="btn btn-primary w-100" type="button" id="ingBtn">Ingresar</button>
-            </div>
-          </div>
+            <button class="btn btn-primary w-100" type="button" id="ingBtn">
+              Ingresar
+            </button>
 
+            <button class="btn btn-secondary w-100 mt-2" type="button" id="regBtn">
+              Registrarse
+            </button>
+
+          </div>
         </div>
       </div>
     </main>
-
   </div>
 
   <!-- Footer -->
@@ -87,29 +89,21 @@
     </p>
   </footer>
 
-  <!-- Alertas -->
-  <div class="alert alert-success alert-dismissible fade" role="alert" id="alert-success">
-    <p>Datos guardados correctamente</p>
-    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+  <!-- ALERTAS NO-BOOTSTRAP (control total) -->
+  <div id="alert-success" class="alert alert-success d-none" role="alert">
+    <p></p>
   </div>
 
-  <div class="alert alert-danger alert-dismissible fade" role="alert" id="alert-danger">
-    <p>Los datos ingresados no cumplen con los requisitos solicitados</p>
-    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+  <div id="alert-danger" class="alert alert-danger d-none" role="alert">
+    <p></p>
   </div>
 
-  <!-- Scripts (orden correcto) -->
-
-  <!-- 1) Librerías -->
+  <!-- Scripts -->
   <script src="js/bootstrap.bundle.min.js"></script>
-
-  <!-- 2) Lógica -->
+  <script src="js/modo_oscuro.js"></script>
   <script src="js/login.js"></script>
 
-  <!-- 3) Modo oscuro -->
-  <script src="js/modo_oscuro.js"></script>
-
-  <!-- 4) Iconos -->
+  <!-- Iconos -->
   <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
   <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
 
