@@ -16,7 +16,7 @@ const db = mysql.createPool({
 });
 
 // Servir datos estáticos
-app.use("/data", express.static(path.join(__dirname, "../frontend/Data")));
+app.use("/data", express.static(path.join(__dirname, "../frontend/data")));
 
 // --- ENDPOINT POST /cart ---
 app.post("/cart", async (req, res) => {
