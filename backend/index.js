@@ -117,7 +117,8 @@ app.post("/cart", async (req, res) => {
       [user_id]
     );
 
-    const cartId = cartResult.insertId;
+    // ✅ FIX DEFINITIVO PARA BIGINT
+    const cartId = Number(cartResult.insertId);
 
     const values = items.map(i => [
       cartId,
@@ -133,7 +134,10 @@ app.post("/cart", async (req, res) => {
       values
     );
 
-    return res.json({ success: true, cart_id: cartId });
+    return res.json({
+      success: true,
+      cart_id: cartId
+    });
 
   } catch (err) {
     console.error("ERROR:", err);

@@ -100,32 +100,27 @@ document.addEventListener("DOMContentLoaded", async () => {
         </button>
       </td>
     `;
+
     tbody.appendChild(tr);
   }
 
   paintCosts(getCurrentSubtotal());
 
-  // --- Cambios de cantidad ---
+  // --- Cambios cantidad ---
   tbody.addEventListener("input", (e) => {
     if (!(e.target instanceof HTMLInputElement) || e.target.type !== "number") return;
 
     const row = e.target.closest("tr");
-    if (!row) return;
-
     const id = Number(row.dataset.id);
     const qty = clampInt(Number(e.target.value), 1, 9999);
 
     const cart = readCartCompat();
     const prod = cart.find((p) => p.id === id);
-    if (prod) {
-      prod.quantity = qty;
-      writeCartCompat(cart);
-    }
+    if (prod) prod.quantity = qty;
+    writeCartCompat(cart);
 
-    const unitUSD = Number(row.dataset.unitUsd);
-    const unitUYU = Number(row.dataset.unitUyu);
-    const subUSD = unitUSD * qty;
-    const subUYU = unitUYU * qty;
+    const subUSD = Number(row.dataset.unitUsd) * qty;
+    const subUYU = Number(row.dataset.unitUyu) * qty;
 
     row.querySelector(".subtotal-usd").textContent = fmtUSD.format(subUSD);
     row.querySelector(".subtotal-uyu").textContent = fmtUYU.format(subUYU);
@@ -147,17 +142,19 @@ document.addEventListener("DOMContentLoaded", async () => {
       location.reload();
       return;
     }
+
     btn.closest("tr").remove();
     paintCosts(getCurrentSubtotal());
     setTimeout(updateCartBadge, 0);
   });
 
-  // --- Cambio envío ---
   shippingRadios().forEach(r =>
     r.addEventListener("change", () => paintCosts(getCurrentSubtotal()))
   );
 
-  // Helpers internos...
+  // -----------------------
+  // Helpers internos
+  // -----------------------
 
   function clampInt(n, min, max) {
     n = Number.isFinite(n) ? Math.round(n) : min;
@@ -180,7 +177,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   function normalizeToUSDandUYU(currency, amount, r) {
     if (currency === "USD") return { usd: amount, uyu: amount * r.USD_UYU };
-    if (currency === "UYU" || currency === "UYU$" || currency === "$U") return { usd: amount * r.UYU_USD, uyu: amount };
+    if (currency === "UYU" || currency === "UYU$" || currency === "$U")
+      return { usd: amount * r.UYU_USD, uyu: amount };
     return { usd: amount, uyu: amount * r.USD_UYU };
   }
 
@@ -214,21 +212,45 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     costShipUSD.textContent = fmtUSD.format(shipUSD);
     costShipUYU.textContent = fmtUYU.format(shipUYU);
-
     costTotalUSD.textContent = fmtUSD.format(sub.usd + shipUSD);
     costTotalUYU.textContent = fmtUYU.format(sub.uyu + shipUYU);
   }
 
   function updateCartBadge() {
     const badge = document.getElementById("cartBadge");
-    const cart = readCartCompat();
-    const totalItems = cart.reduce((acc, p) => acc + p.quantity, 0);
     if (!badge) return;
-    badge.textContent = totalItems;
+    const cart = readCartCompat();
+    badge.textContent = cart.reduce((a, p) => a + p.quantity, 0);
     badge.style.display = "inline-block";
   }
 
   updateCartBadge();
+
+  // ---------- METODOS DE PAGO ----------
+  const paymentRadios = document.querySelectorAll('input[name="paymentMethod"]');
+  const paymentDetails = document.getElementById("paymentDetails");
+
+  function renderPaymentFields(method) {
+    paymentDetails.innerHTML = "";
+
+    if (method === "credit") {
+      paymentDetails.innerHTML = `
+        <input class="form-control mb-2" id="cardNumber" placeholder="Número de tarjeta">
+        <input class="form-control mb-2" id="cardExpiry" placeholder="MM/AA">
+        <input class="form-control mb-2" id="cardCvv" placeholder="CVV">
+      `;
+    }
+
+    if (method === "bank") {
+      paymentDetails.innerHTML = `
+        <input class="form-control mb-2" id="bankAccount" placeholder="N° de cuenta o comprobante">
+      `;
+    }
+  }
+
+  paymentRadios.forEach(r => {
+    r.addEventListener("change", (e) => renderPaymentFields(e.target.value));
+  });
 
 });
 
@@ -246,34 +268,37 @@ document.getElementById("btnFinalizar").addEventListener("click", async () => {
 });
 
 function validarCompra() {
+
+  // Dirección
   const camposDireccion = document.querySelectorAll("#shippingForm .form-control");
   for (let campo of camposDireccion) {
-    if (!campo.value.trim()) {
-      campo.classList.add("is-invalid");
-      return false;
-    } else {
-      campo.classList.remove("is-invalid");
-    }
+    if (!campo.value.trim()) return false;
   }
 
-  const envioSeleccionado = document.querySelector('input[name="shippingOption"]:checked');
-  if (!envioSeleccionado) {
-    alert("⚠️ Seleccioná un tipo de envío.");
-    return false;
-  }
+  // Envío
+  if (!document.querySelector('input[name="shippingOption"]:checked')) return false;
 
+  // Cantidades
   const cantidades = document.querySelectorAll(".cantidad-producto");
-  for (let cantidad of cantidades) {
-    if (parseInt(cantidad.value) <= 0 || isNaN(cantidad.value)) {
-      alert("⚠️ La cantidad de cada producto debe ser mayor a 0.");
-      return false;
-    }
+  for (let c of cantidades) {
+    if (parseInt(c.value) <= 0 || isNaN(c.value)) return false;
   }
 
-  const pagoSeleccionado = document.querySelector('input[name="paymentMethod"]:checked');
-  if (!pagoSeleccionado) {
-    alert("Seleccioná una forma de pago.");
-    return false;
+  // Pago
+  const method = document.querySelector('input[name="paymentMethod"]:checked');
+  if (!method) return false;
+
+  if (method.value === "credit") {
+    if (
+      !document.getElementById("cardNumber")?.value.trim() ||
+      !document.getElementById("cardExpiry")?.value.trim() ||
+      !document.getElementById("cardCvv")?.value.trim()
+    ) return false;
+  }
+
+  if (method.value === "bank") {
+    if (!document.getElementById("bankAccount")?.value.trim())
+      return false;
   }
 
   return true;
@@ -282,33 +307,29 @@ function validarCompra() {
 async function enviarCarritoAlServidor() {
   const cart = JSON.parse(localStorage.getItem("cartItems")) || [];
   const token = localStorage.getItem("token");
-  if (!token) {
-    alert("Error: No estás autenticado.");
-    return;
-  }
+  if (!token) return alert("Error: No estás autenticado.");
 
   const payload = {
-    user_id: 1, 
+    user_id: 1,
     items: []
   };
 
   for (const item of cart) {
-    const url = `https://japceibal.github.io/emercado-api/products/${item.id}.json`;
-    const res = await fetch(url);
-    const product = await res.json();
+    const res = await fetch(`https://japceibal.github.io/emercado-api/products/${item.id}.json`);
+    const p = await res.json();
 
     payload.items.push({
-      product_id: product.id,
-      product_name: product.name,
-      unit_cost: product.cost,
-      currency: product.currency,
+      product_id: p.id,
+      product_name: p.name,
+      unit_cost: p.cost,
+      currency: p.currency,
       quantity: item.quantity
     });
   }
 
   const resp = await fetch("http://localhost:3000/cart", {
     method: "POST",
-    headers: { 
+    headers: {
       "Content-Type": "application/json",
       "Authorization": "Bearer " + token
     },
